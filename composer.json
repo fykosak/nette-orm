@@ -1,0 +1,21 @@
+{
+  "name": "fykosak/nette-orm",
+  "type": "library",
+  "version": "0.1.0-beta",
+  "require": {
+    "php": ">=7.4",
+    "nette/di": "^3.0.8",
+    "nette/database": "^3.1"
+  },
+  "authors": [
+    {
+      "name": "Michal Mišo Červeňák",
+      "email": "miso@fykos.cz"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Fykosak\\NetteORM\\": "src/"
+    }
+  }
+}
