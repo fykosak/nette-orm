@@ -1,7 +1,7 @@
 {
   "name": "fykosak/nette-orm",
   "type": "library",
-  "licence": "GPL-3.0-or-later",
+  "license": "GPL-3.0-or-later",
   "version": "0.1.2",
   "require": {
     "php": ">=7.4",
