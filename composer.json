@@ -1,11 +1,12 @@
 {
   "name": "fykosak/nette-orm",
   "type": "library",
-  "version": "0.1.0-beta",
+  "version": "0.1.1",
   "require": {
     "php": ">=7.4",
     "nette/di": "^3.0.8",
-    "nette/database": "^3.1"
+    "nette/database": "^3.1",
+    "ext-pdo": "*"
   },
   "authors": [
     {

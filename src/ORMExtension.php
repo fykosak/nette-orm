@@ -19,7 +19,7 @@ class ORMExtension extends CompilerExtension {
         }
     }
 
-    private function registerORMService(string $tableName, array $fieldDefinitions): void {
+    final protected function registerORMService(string $tableName, array $fieldDefinitions): void {
         if (isset($fieldDefinitions['serviceClassName'])) {
             $builder = $this->getContainerBuilder();
             $factory = $builder->addDefinition($this->prefix($tableName . '.service'));

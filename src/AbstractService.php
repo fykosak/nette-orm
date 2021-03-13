@@ -20,10 +20,12 @@ abstract class AbstractService {
 
     use SmartObject;
 
+    protected ?array $defaults = null;
     private string $modelClassName;
     private string $tableName;
     private Explorer $explorer;
     private Conventions $conventions;
+    private array $columns;
 
     public function __construct(string $tableName, string $modelClassName, Explorer $explorer, Conventions $conventions) {
         $this->tableName = $tableName;
@@ -112,12 +114,26 @@ abstract class AbstractService {
         return new TypedTableSelection($this->getModelClassName(), $this->tableName, $this->explorer, $this->conventions);
     }
 
+    public function store(?AbstractModel $model, array $data): AbstractModel {
+        if ($model) {
+            $this->updateModel2($model, $data);
+            return $this->refresh($model);
+        } else {
+            return $this->createNewModel($data);
+        }
+    }
+
     public function getExplorer(): Explorer {
         return $this->explorer;
     }
 
     public function getConventions(): Conventions {
         return $this->conventions;
+    }
+
+    /** @return string|AbstractModel */
+    final public function getModelClassName(): string {
+        return $this->modelClassName;
     }
 
     /**
@@ -130,8 +146,6 @@ abstract class AbstractService {
             throw new InvalidArgumentException('Service for class ' . $this->getModelClassName() . ' cannot store ' . get_class($model));
         }
     }
-
-    protected ?array $defaults = null;
 
     /**
      * Default data for the new model.
@@ -169,17 +183,10 @@ abstract class AbstractService {
         return $result;
     }
 
-    private array $columns;
-
     private function getColumnMetadata(): array {
         if (!isset($this->columns)) {
             $this->columns = $this->explorer->getConnection()->getDriver()->getColumns($this->tableName);
         }
         return $this->columns;
-    }
-
-    /** @return string|AbstractModel */
-    final public function getModelClassName(): string {
-        return $this->modelClassName;
     }
 }
