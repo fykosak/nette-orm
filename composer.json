@@ -1,8 +1,9 @@
 {
+  "description": "",
   "name": "fykosak/nette-orm",
   "type": "library",
   "license": "GPL-3.0-or-later",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "require": {
     "php": ">=7.4",
     "nette/di": "^3.0.8",
@@ -11,8 +12,16 @@
   },
   "authors": [
     {
+      "name": "Michal Koutny",
+      "email": "michal@fykos.cz"
+    },
+    {
       "name": "Michal Mišo Červeňák",
       "email": "miso@fykos.cz"
+    },
+    {
+      "name": "Lukáš Timo",
+      "email": "lukast@fykos.cz"
     }
   ],
   "autoload": {

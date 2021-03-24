@@ -23,15 +23,13 @@ abstract class AbstractService {
     protected ?array $defaults = null;
     private string $modelClassName;
     private string $tableName;
-    private Explorer $explorer;
-    private Conventions $conventions;
+    public Explorer $explorer;
     private array $columns;
 
-    public function __construct(string $tableName, string $modelClassName, Explorer $explorer, Conventions $conventions) {
+    public final function __construct(string $tableName, string $modelClassName, Explorer $explorer) {
         $this->tableName = $tableName;
         $this->modelClassName = $modelClassName;
         $this->explorer = $explorer;
-        $this->conventions = $conventions;
     }
 
     /**
@@ -123,12 +121,20 @@ abstract class AbstractService {
         }
     }
 
+    /**
+     * @return Explorer
+     * @deprecated
+     */
     public function getExplorer(): Explorer {
         return $this->explorer;
     }
 
+    /**
+     * @return Conventions
+     * @deprecated
+     */
     public function getConventions(): Conventions {
-        return $this->conventions;
+        return $this->explorer->getConventions();
     }
 
     /** @return string|AbstractModel */
