@@ -28,8 +28,8 @@ jobs:
         run: composer install --no-progress --prefer-dist
       - name: DB configuration
         run: |
-          "ls -lA"
-          "ls tests"
+          ls -l
+          ls tests
           "sed -e 's/user:/user: runner/' tests/config.local.neon.example > tests/config.local.neon"
       - name: Start and prepare MySQL
         run: |
