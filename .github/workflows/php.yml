@@ -35,7 +35,12 @@ jobs:
       - run: composer run-script initTestDatabase
         name: Init test database
       - run: composer run-script testCoverage
-        name: Test         
+        name: Test 
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report
+          path: coverage.html
       - if: failure()
         name: Failure output
         uses: actions/upload-artifact@v2
