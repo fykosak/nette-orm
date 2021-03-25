@@ -1,5 +1,8 @@
 # Nette ORM
 
+![GitHub branch checks state](https://img.shields.io/github/checks-status/fykosak/nette-orm/master)
+<img src="https://img.shields.io/badge/coverage-87%25-green" />
+
 ## install
 
 ### Create ORM model
