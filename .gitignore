@@ -2,3 +2,4 @@
 /tests/config.local.neon
 /tests/temp/*
 !/tests/temp/.gitignore
+coverage.html

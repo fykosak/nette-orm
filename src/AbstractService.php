@@ -121,22 +121,6 @@ abstract class AbstractService {
         }
     }
 
-    /**
-     * @return Explorer
-     * @deprecated
-     */
-    public function getExplorer(): Explorer {
-        return $this->explorer;
-    }
-
-    /**
-     * @return Conventions
-     * @deprecated
-     */
-    public function getConventions(): Conventions {
-        return $this->explorer->getConventions();
-    }
-
     /** @return string|AbstractModel */
     final public function getModelClassName(): string {
         return $this->modelClassName;
@@ -157,6 +141,7 @@ abstract class AbstractService {
      * Default data for the new model.
      * TODO is this really needed?
      * @return array
+     * @deprecated
      */
     protected function getDefaultData(): array {
         if (!isset($this->defaults)) {
@@ -189,7 +174,7 @@ abstract class AbstractService {
         return $result;
     }
 
-    private function getColumnMetadata(): array {
+    protected function getColumnMetadata(): array {
         if (!isset($this->columns)) {
             $this->columns = $this->explorer->getConnection()->getDriver()->getColumns($this->tableName);
         }
