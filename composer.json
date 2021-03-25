@@ -35,6 +35,9 @@
     }
   },
   "scripts": {
+    "initTestDatabse": [
+      "mysql nette_orm_test < tests/resource/schema.sql "
+    ],
     "clearCache": [
       "rm -r tests/temp/*"
     ],
