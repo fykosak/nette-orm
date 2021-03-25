@@ -45,7 +45,6 @@
       "vendor/bin/tester tests -p php -s -c tests/php.ini -j 1"
     ],
     "testCoverage": [
-      "@clearCache",
       "vendor/bin/tester tests -p php --coverage coverage.html --coverage-src src/ -s -c tests/php.ini -j 1"
     ]
   }
