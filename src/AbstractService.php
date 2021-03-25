@@ -121,22 +121,6 @@ abstract class AbstractService {
         }
     }
 
-    /**
-     * @return Explorer
-     * @deprecated
-     */
-    public function getExplorer(): Explorer {
-        return $this->explorer;
-    }
-
-    /**
-     * @return Conventions
-     * @deprecated
-     */
-    public function getConventions(): Conventions {
-        return $this->explorer->getConventions();
-    }
-
     /** @return string|AbstractModel */
     final public function getModelClassName(): string {
         return $this->modelClassName;
@@ -151,25 +135,6 @@ abstract class AbstractService {
         if (!$model instanceof $modelClassName) {
             throw new InvalidArgumentException('Service for class ' . $this->getModelClassName() . ' cannot store ' . get_class($model));
         }
-    }
-
-    /**
-     * Default data for the new model.
-     * TODO is this really needed?
-     * @return array
-     */
-    protected function getDefaultData(): array {
-        if (!isset($this->defaults)) {
-            $this->defaults = [];
-            foreach ($this->getColumnMetadata() as $column) {
-                if ($column['nativetype'] == 'TIMESTAMP' && isset($column['default'])
-                    && !preg_match('/^[0-9]{4}/', $column['default'])) {
-                    continue;
-                }
-                $this->defaults[$column['name']] = isset($column['default']) ? $column['default'] : null;
-            }
-        }
-        return $this->defaults;
     }
 
     /**
@@ -189,7 +154,7 @@ abstract class AbstractService {
         return $result;
     }
 
-    private function getColumnMetadata(): array {
+    protected function getColumnMetadata(): array {
         if (!isset($this->columns)) {
             $this->columns = $this->explorer->getConnection()->getDriver()->getColumns($this->tableName);
         }
