@@ -1,0 +1,49 @@
+name: PHP (Nette Tester)
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }} with ${{ matrix.database }}
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '7.4' ]
+        database: [ 'mysql' ]
+    steps:
+      # MariaDB container has to be started in advance to initialize itself before using it.
+      - uses: actions/checkout@v2
+        name: Checkout
+        with:
+          submodules: recursive
+      - uses: shivammathur/setup-php@v2
+        name: Setup PHP
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, mbstring, mysql, soap, xml
+          tools: composer
+          ini-values: session.gc_probability=0, date.timezone="Europe/Prague", display_startup_errors = Off
+      - name: Composer install
+        run: composer install --no-progress --prefer-dist
+      - name: DB configuration
+        run: "sed -e 's/user:/user: runner/' tests/config.local.neon.example > tests/config.local.neon"
+      - name: Start and prepare MySQL
+        run: |
+          sudo service mysql start
+          sudo mysql -proot -e "ALTER USER 'root'@'localhost' IDENTIFIED BY ''; CREATE USER 'runner'@'localhost' IDENTIFIED BY ''; GRANT ALL PRIVILEGES ON * . * TO 'runner'@'localhost';"
+      - run: composer run-script initTestDatabase
+        name: Init test database
+      - run: composer run-script testCoverage
+        name: Test 
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report
+          path: coverage.html
+      - if: failure()
+        name: Failure output
+        uses: actions/upload-artifact@v2
+        with:
+          name: output
+          path: tests/**/*.actual

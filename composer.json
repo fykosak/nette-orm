@@ -6,9 +6,13 @@
   "version": "0.1.3",
   "require": {
     "php": ">=7.4",
-    "nette/di": "^3.0.8",
+    "nette/di": "^3.0",
     "nette/database": "^3.1",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "ext-gettext": "*"
+  },
+  "require-dev": {
+    "nette/tester": "^2.4.0"
   },
   "authors": [
     {
@@ -26,7 +30,22 @@
   ],
   "autoload": {
     "psr-4": {
-      "Fykosak\\NetteORM\\": "src/"
+      "Fykosak\\NetteORM\\": "src/",
+      "Fykosak\\NetteORM\\Tests\\": "tests/"
     }
+  },
+  "scripts": {
+    "initTestDatabase": [
+      "mysql < tests/resource/schema.sql "
+    ],
+    "clearCache": [
+      "rm -r tests/temp/*"
+    ],
+    "test": [
+      "vendor/bin/tester tests -p php -s -c tests/php.ini -j 1"
+    ],
+    "testCoverage": [
+      "vendor/bin/tester tests -p php --coverage coverage.html --coverage-src src/ -s -c tests/php.ini -j 1"
+    ]
   }
 }

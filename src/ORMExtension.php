@@ -20,10 +20,12 @@ class ORMExtension extends CompilerExtension {
     }
 
     final protected function registerORMService(string $tableName, array $fieldDefinitions): void {
-        if (isset($fieldDefinitions['serviceClassName'])) {
+        $serviceClassName = $fieldDefinitions['serviceClassName'] ?? ($fieldDefinitions['service'] ?? null);
+        $modelClassName = $fieldDefinitions['modelClassName'] ?? ($fieldDefinitions['model'] ?? null);
+        if ($serviceClassName) {
             $builder = $this->getContainerBuilder();
             $factory = $builder->addDefinition($this->prefix($tableName . '.service'));
-            $factory->setFactory($fieldDefinitions['serviceClassName'], [$tableName, $fieldDefinitions['modelClassName']]);
+            $factory->setFactory($serviceClassName, [$tableName, $modelClassName]);
         }
     }
 }
