@@ -34,8 +34,11 @@ jobs:
           sudo mysql -proot -e "ALTER USER 'root'@'localhost' IDENTIFIED BY ''; CREATE USER 'runner'@'localhost' IDENTIFIED BY ''; GRANT ALL PRIVILEGES ON * . * TO 'runner'@'localhost';"
       - run: composer run-script initTestDatabase
         name: Init test database
-      - run: composer run-script test
+      - run: composer run-script testCoverage
         name: Test
+      - uses: actions/download-artifact@v2
+        with:
+          name: coverage.html
       - if: failure()
         name: Failure output
         uses: actions/upload-artifact@v2
