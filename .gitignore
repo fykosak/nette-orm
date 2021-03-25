@@ -1,1 +1,3 @@
 /vendor/
+/tests/config.local.neon
+/tests/temp/

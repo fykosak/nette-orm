@@ -109,7 +109,7 @@ abstract class AbstractService {
     }
 
     public function getTable(): TypedTableSelection {
-        return new TypedTableSelection($this->getModelClassName(), $this->tableName, $this->explorer, $this->conventions);
+        return new TypedTableSelection($this->getModelClassName(), $this->tableName, $this->explorer, $this->explorer->getConventions());
     }
 
     public function store(?AbstractModel $model, array $data): AbstractModel {
