@@ -38,7 +38,8 @@ jobs:
         name: Test
       - uses: actions/download-artifact@v2
         with:
-          name: coverage.html
+          name: ./coverage.html
+          
       - if: failure()
         name: Failure output
         uses: actions/upload-artifact@v2
