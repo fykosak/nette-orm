@@ -138,26 +138,6 @@ abstract class AbstractService {
     }
 
     /**
-     * Default data for the new model.
-     * TODO is this really needed?
-     * @return array
-     * @deprecated
-     */
-    protected function getDefaultData(): array {
-        if (!isset($this->defaults)) {
-            $this->defaults = [];
-            foreach ($this->getColumnMetadata() as $column) {
-                if ($column['nativetype'] == 'TIMESTAMP' && isset($column['default'])
-                    && !preg_match('/^[0-9]{4}/', $column['default'])) {
-                    continue;
-                }
-                $this->defaults[$column['name']] = isset($column['default']) ? $column['default'] : null;
-            }
-        }
-        return $this->defaults;
-    }
-
-    /**
      * Omits array elements whose keys aren't columns in the table.
      *
      * @param array $data
