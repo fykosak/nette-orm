@@ -4,7 +4,6 @@ namespace Fykosak\NetteORM;
 
 use Fykosak\NetteORM\Exceptions\ModelException;
 use InvalidArgumentException;
-use Nette\Database\Conventions;
 use Nette\Database\Explorer;
 use Nette\SmartObject;
 use PDOException;
@@ -42,14 +41,10 @@ abstract class AbstractService {
         $data = $this->filterData($data);
         try {
             $result = $this->getTable()->insert($data);
-            if ($result !== false) {
-                return ($modelClassName)::createFromActiveRow($result);
-            }
+            return ($modelClassName)::createFromActiveRow($result);
         } catch (PDOException $exception) {
             throw new ModelException('Error when storing model.', null, $exception);
         }
-        $code = $this->explorer->getConnection()->getPdo()->errorCode();
-        throw new ModelException("$code: Error when storing a model.");
     }
 
     /**
@@ -80,12 +75,30 @@ abstract class AbstractService {
      * @param array $data
      * @return bool
      * @throws ModelException
+     * @deprecated use updateModel will be removed in 0.3.0
      */
     public function updateModel2(AbstractModel $model, array $data): bool {
         try {
             $this->checkType($model);
             $data = $this->filterData($data);
             return $model->update($data);
+        } catch (PDOException $exception) {
+            throw new ModelException('Error when storing model.', null, $exception);
+        }
+    }
+
+    /**
+     * @param AbstractModel $model
+     * @param array $data
+     * @return AbstractModel refreshed model
+     * @throws ModelException
+     */
+    public function updateModel(AbstractModel $model, array $data): AbstractModel {
+        try {
+            $this->checkType($model);
+            $data = $this->filterData($data);
+            $model->update($data);
+            return $this->refresh($model);
         } catch (PDOException $exception) {
             throw new ModelException('Error when storing model.', null, $exception);
         }
@@ -112,6 +125,12 @@ abstract class AbstractService {
         return new TypedTableSelection($this->getModelClassName(), $this->tableName, $this->explorer, $this->explorer->getConventions());
     }
 
+    /**
+     * @param AbstractModel|null $model
+     * @param array $data
+     * @return AbstractModel
+     * @deprecated use storeModel will be removed in 0.3.0
+     */
     public function store(?AbstractModel $model, array $data): AbstractModel {
         if ($model) {
             $this->updateModel2($model, $data);
@@ -119,6 +138,10 @@ abstract class AbstractService {
         } else {
             return $this->createNewModel($data);
         }
+    }
+
+    public function storeModel(array $data, ?AbstractModel $model = null): AbstractModel {
+        return isset($model) ? $this->updateModel($model, $data) : $this->createNewModel($data);
     }
 
     /** @return string|AbstractModel */

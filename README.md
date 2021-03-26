@@ -1,7 +1,7 @@
 # Nette ORM
 
 ![GitHub branch checks state](https://img.shields.io/github/checks-status/fykosak/nette-orm/master)
-<img src="https://img.shields.io/badge/coverage-97%25-green" />
+<img src="https://img.shields.io/badge/coverage-100%25-green" />
 
 ## install
 
