@@ -65,6 +65,7 @@ abstract class AbstractService {
     /**
      * @param AbstractModel $model
      * @return AbstractModel|null
+     * @deprecated unnecessary, will be removed in 0.3.0
      */
     public function refresh(AbstractModel $model): AbstractModel {
         return $this->findByPrimary($model->getPrimary(true));
@@ -78,27 +79,20 @@ abstract class AbstractService {
      * @deprecated use updateModel will be removed in 0.3.0
      */
     public function updateModel2(AbstractModel $model, array $data): bool {
-        try {
-            $this->checkType($model);
-            $data = $this->filterData($data);
-            return $model->update($data);
-        } catch (PDOException $exception) {
-            throw new ModelException('Error when storing model.', null, $exception);
-        }
+        return $this->updateModel($model, $data);
     }
 
     /**
      * @param AbstractModel $model
      * @param array $data
-     * @return AbstractModel refreshed model
+     * @return bool
      * @throws ModelException
      */
-    public function updateModel(AbstractModel $model, array $data): AbstractModel {
+    public function updateModel(AbstractModel $model, array $data): bool {
         try {
             $this->checkType($model);
             $data = $this->filterData($data);
-            $model->update($data);
-            return $this->refresh($model);
+            return $model->update($data);
         } catch (PDOException $exception) {
             throw new ModelException('Error when storing model.', null, $exception);
         }
@@ -133,15 +127,19 @@ abstract class AbstractService {
      */
     public function store(?AbstractModel $model, array $data): AbstractModel {
         if ($model) {
-            $this->updateModel2($model, $data);
-            return $this->refresh($model);
+            $this->updateModel($model, $data);
+            return $model;
         } else {
             return $this->createNewModel($data);
         }
     }
 
     public function storeModel(array $data, ?AbstractModel $model = null): AbstractModel {
-        return isset($model) ? $this->updateModel($model, $data) : $this->createNewModel($data);
+        if (isset($model)) {
+            $this->updateModel($model, $data);
+            return $model;
+        }
+        return $this->createNewModel($data);
     }
 
     /** @return string|AbstractModel */
