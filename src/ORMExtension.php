@@ -5,9 +5,6 @@ namespace Fykosak\NetteORM;
 use Nette\DI\CompilerExtension;
 use Nette\NotImplementedException;
 
-/**
- * @author Michal Červeňák <miso@fykos.cz>
- */
 class ORMExtension extends CompilerExtension {
 
     /**

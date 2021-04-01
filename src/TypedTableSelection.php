@@ -6,9 +6,6 @@ use Nette\Database\Conventions;
 use Nette\Database\Explorer;
 use Nette\Database\Table\Selection;
 
-/**
- * @author Michal Koutný <xm.koutny@gmail.com>
- */
 class TypedTableSelection extends Selection {
 
     protected string $modelClassName;
@@ -18,12 +15,6 @@ class TypedTableSelection extends Selection {
         $this->modelClassName = $modelClassName;
     }
 
-    /**
-     * This override ensures returned objects are of correct class.
-     *
-     * @param array $row
-     * @return AbstractModel
-     */
     protected function createRow(array $row): AbstractModel {
         $className = $this->modelClassName;
         return new $className($row, $this);
