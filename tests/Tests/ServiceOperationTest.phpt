@@ -63,9 +63,8 @@ class ServiceOperationTest extends AbstractTestCase {
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(2);
         $serviceParticipant->updateModel2($participant, ['name' => 'Betka']);
-        $newParticipant = $serviceParticipant->refresh($participant);
-        Assert::same('Betka', $newParticipant->name);
-        Assert::type(ModelParticipant::class, $newParticipant);
+        Assert::same('Betka', $participant->name);
+        Assert::type(ModelParticipant::class, $participant);
     }
 
     public function testLegacyUpdateError(): void {
@@ -76,17 +75,16 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::exception(function () use ($participant, $serviceParticipant) {
             $serviceParticipant->updateModel2($participant, ['event_id' => 4]);
         }, ModelException::class);
-        $newParticipant = $serviceParticipant->refresh($participant);
-        Assert::same('Bára', $newParticipant->name);
+        Assert::same('Bára', $participant->name);
     }
 
     public function testUpdateSuccess(): void {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(2);
-        $newParticipant = $serviceParticipant->updateModel($participant, ['name' => 'Betka']);
-        Assert::same('Betka', $newParticipant->name);
-        Assert::type(ModelParticipant::class, $newParticipant);
+        $serviceParticipant->updateModel($participant, ['name' => 'Betka']);
+        Assert::same('Betka', $participant->name);
+        Assert::type(ModelParticipant::class, $participant);
     }
 
     public function testUpdateError(): void {
@@ -97,8 +95,7 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::exception(function () use ($participant, $serviceParticipant) {
             $serviceParticipant->updateModel($participant, ['event_id' => 4]);
         }, ModelException::class);
-        $newParticipant = $serviceParticipant->refresh($participant);
-        Assert::same('Bára', $newParticipant->name);
+        Assert::same('Bára', $participant->name);
     }
 
     public function testLegacyStoreExists(): void {
@@ -106,8 +103,9 @@ class ServiceOperationTest extends AbstractTestCase {
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(2);
         $newParticipant = $serviceParticipant->store($participant, ['name' => 'Betka']);
-        Assert::same('Betka', $newParticipant->name);
-        Assert::type(ModelParticipant::class, $newParticipant);
+        Assert::same($participant, $newParticipant);
+        Assert::same('Betka', $participant->name);
+        Assert::type(ModelParticipant::class, $participant);
     }
 
     public function testStoreExists(): void {
@@ -115,8 +113,9 @@ class ServiceOperationTest extends AbstractTestCase {
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(2);
         $newParticipant = $serviceParticipant->storeModel(['name' => 'Betka'], $participant);
-        Assert::same('Betka', $newParticipant->name);
-        Assert::type(ModelParticipant::class, $newParticipant);
+        Assert::same($participant, $newParticipant);// must be a same obj
+        Assert::same('Betka', $participant->name);
+        Assert::type(ModelParticipant::class, $participant);
     }
 
     public function testLegacyStoreNew(): void {
