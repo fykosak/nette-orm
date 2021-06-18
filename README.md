@@ -1,7 +1,7 @@
 # Nette ORM
 
 ![GitHub branch checks state](https://img.shields.io/github/checks-status/fykosak/nette-orm/master)
-<img src="https://img.shields.io/badge/coverage-100%25-green" />
+<img src="https://img.shields.io/badge/coverage-99%25-green" />
 
 ## install
 
@@ -50,11 +50,11 @@ class ServiceEvent extends AbstractService {
 ```neon
 orm:
     <table_name>:
-        serviceClassName: 'FQN of service'
-        modelClassName: 'FQN of model'
+        service: 'FQN of service'
+        model: 'FQN of model'
     <another_table_name>:
-        serviceClassName: 'FQN of another service'
-        modelClassName: 'FQN of another model'
+        service: 'FQN of another service'
+        model: 'FQN of another model'
 
 ```
 ```neon

@@ -3,9 +3,8 @@
   "name": "fykosak/nette-orm",
   "type": "library",
   "license": "GPL-3.0-or-later",
-  "version": "0.2.2",
   "require": {
-    "php": ">=7.4",
+    "php": ">=7.4 <8.1",
     "nette/di": "^3.0",
     "nette/database": "^3.1",
     "ext-pdo": "*",
