@@ -71,8 +71,17 @@ abstract class AbstractService {
     /**
      * @param AbstractModel $model
      * @throws ModelException
+     * @deprecated
      */
     public function dispose(AbstractModel $model): void {
+        $this->disposeModel($model);
+    }
+
+    /**
+     * @param AbstractModel $model
+     * @throws ModelException
+     */
+    public function disposeModel(AbstractModel $model): void {
         $this->checkType($model);
         try {
             $model->delete();

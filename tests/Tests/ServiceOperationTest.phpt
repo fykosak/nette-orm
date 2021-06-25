@@ -101,7 +101,7 @@ class ServiceOperationTest extends AbstractTestCase {
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(2);
         $countBefore = $serviceParticipant->getTable()->count('*');
-        $serviceParticipant->dispose($participant);
+        $serviceParticipant->disposeModel($participant);
         $countAfter = $serviceParticipant->getTable()->count('*');
         Assert::same($countBefore - 1, $countAfter);
     }
@@ -111,7 +111,7 @@ class ServiceOperationTest extends AbstractTestCase {
         $serviceEvent = $this->container->getByType(ServiceEvent::class);
         $event = $serviceEvent->getTable()->fetch();
         Assert::exception(function () use ($event, $serviceParticipant) {
-            $serviceParticipant->dispose($event);
+            $serviceParticipant->disposeModel($event);
         }, \InvalidArgumentException::class);
     }
 
@@ -119,7 +119,7 @@ class ServiceOperationTest extends AbstractTestCase {
         $serviceEvent = $this->container->getByType(ServiceEvent::class);
         $event = $serviceEvent->getTable()->fetch();
         Assert::exception(function () use ($event, $serviceEvent) {
-            $serviceEvent->dispose($event);
+            $serviceEvent->disposeModel($event);
         }, ModelException::class);
     }
 
