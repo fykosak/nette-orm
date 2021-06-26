@@ -58,26 +58,6 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::null($participant);
     }
 
-    public function testLegacyUpdateSuccess(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
-        $participant = $serviceParticipant->findByPrimary(2);
-        $serviceParticipant->updateModel2($participant, ['name' => 'Betka']);
-        Assert::same('Betka', $participant->name);
-        Assert::type(ModelParticipant::class, $participant);
-    }
-
-    public function testLegacyUpdateError(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
-        $participant = $serviceParticipant->findByPrimary(2);
-
-        Assert::exception(function () use ($participant, $serviceParticipant) {
-            $serviceParticipant->updateModel2($participant, ['event_id' => 4]);
-        }, ModelException::class);
-        Assert::same('Bára', $participant->name);
-    }
-
     public function testUpdateSuccess(): void {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
@@ -98,16 +78,6 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::same('Bára', $participant->name);
     }
 
-    public function testLegacyStoreExists(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
-        $participant = $serviceParticipant->findByPrimary(2);
-        $newParticipant = $serviceParticipant->store($participant, ['name' => 'Betka']);
-        Assert::same($participant, $newParticipant);
-        Assert::same('Betka', $participant->name);
-        Assert::type(ModelParticipant::class, $participant);
-    }
-
     public function testStoreExists(): void {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
@@ -116,14 +86,6 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::same($participant, $newParticipant);// must be a same obj
         Assert::same('Betka', $participant->name);
         Assert::type(ModelParticipant::class, $participant);
-    }
-
-    public function testLegacyStoreNew(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
-        $newParticipant = $serviceParticipant->store(null, ['event_id' => 1, 'name' => 'Igor']);
-        Assert::same('Igor', $newParticipant->name);
-        Assert::type(ModelParticipant::class, $newParticipant);
     }
 
     public function testStoreNew(): void {
@@ -139,7 +101,7 @@ class ServiceOperationTest extends AbstractTestCase {
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(2);
         $countBefore = $serviceParticipant->getTable()->count('*');
-        $serviceParticipant->dispose($participant);
+        $serviceParticipant->disposeModel($participant);
         $countAfter = $serviceParticipant->getTable()->count('*');
         Assert::same($countBefore - 1, $countAfter);
     }
@@ -149,7 +111,7 @@ class ServiceOperationTest extends AbstractTestCase {
         $serviceEvent = $this->container->getByType(ServiceEvent::class);
         $event = $serviceEvent->getTable()->fetch();
         Assert::exception(function () use ($event, $serviceParticipant) {
-            $serviceParticipant->dispose($event);
+            $serviceParticipant->disposeModel($event);
         }, \InvalidArgumentException::class);
     }
 
@@ -157,7 +119,7 @@ class ServiceOperationTest extends AbstractTestCase {
         $serviceEvent = $this->container->getByType(ServiceEvent::class);
         $event = $serviceEvent->getTable()->fetch();
         Assert::exception(function () use ($event, $serviceEvent) {
-            $serviceEvent->dispose($event);
+            $serviceEvent->disposeModel($event);
         }, ModelException::class);
     }
 

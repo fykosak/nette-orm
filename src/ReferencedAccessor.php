@@ -5,10 +5,6 @@ namespace Fykosak\NetteORM;
 use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
 use ReflectionClass;
 
-/**
- * Class ReferencedFactory
- * @author Michal Červeňák <miso@fykos.cz>
- */
 final class ReferencedAccessor {
 
     /**

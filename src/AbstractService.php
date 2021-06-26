@@ -8,18 +8,10 @@ use Nette\Database\Explorer;
 use Nette\SmartObject;
 use PDOException;
 
-/**
- * Service class to high-level manipulation with ORM objects.
- * Use singleton descendant implementations.
- *
- * @author Michal Koutný <xm.koutny@gmail.com>
- * @author Michal Červeňak <miso@fykos.cz>
- */
 abstract class AbstractService {
 
     use SmartObject;
 
-    protected ?array $defaults = null;
     private string $modelClassName;
     private string $tableName;
     public Explorer $explorer;
@@ -29,6 +21,19 @@ abstract class AbstractService {
         $this->tableName = $tableName;
         $this->modelClassName = $modelClassName;
         $this->explorer = $explorer;
+    }
+
+    /**
+     * @param mixed $key
+     * @return AbstractModel|null
+     */
+    public function findByPrimary($key): ?AbstractModel {
+        if (is_null($key)) {
+            return null;
+        }
+        /** @var AbstractModel|null $result */
+        $result = $this->getTable()->get($key);
+        return $result;
     }
 
     /**
@@ -48,41 +53,6 @@ abstract class AbstractService {
     }
 
     /**
-     * Syntactic sugar.
-     *
-     * @param mixed $key
-     * @return AbstractModel|null
-     */
-    public function findByPrimary($key): ?AbstractModel {
-        if (is_null($key)) {
-            return null;
-        }
-        /** @var AbstractModel|null $result */
-        $result = $this->getTable()->get($key);
-        return $result;
-    }
-
-    /**
-     * @param AbstractModel $model
-     * @return AbstractModel|null
-     * @deprecated unnecessary, will be removed in 0.3.0
-     */
-    public function refresh(AbstractModel $model): AbstractModel {
-        return $this->findByPrimary($model->getPrimary(true));
-    }
-
-    /**
-     * @param AbstractModel $model
-     * @param array $data
-     * @return bool
-     * @throws ModelException
-     * @deprecated use updateModel will be removed in 0.3.0
-     */
-    public function updateModel2(AbstractModel $model, array $data): bool {
-        return $this->updateModel($model, $data);
-    }
-
-    /**
      * @param AbstractModel $model
      * @param array $data
      * @return bool
@@ -99,13 +69,19 @@ abstract class AbstractService {
     }
 
     /**
-     * Use this method to delete a model!
-     * (Name chosen not to collide with parent.)
-     *
+     * @param AbstractModel $model
+     * @throws ModelException
+     * @deprecated
+     */
+    public function dispose(AbstractModel $model): void {
+        $this->disposeModel($model);
+    }
+
+    /**
      * @param AbstractModel $model
      * @throws ModelException
      */
-    public function dispose(AbstractModel $model): void {
+    public function disposeModel(AbstractModel $model): void {
         $this->checkType($model);
         try {
             $model->delete();
@@ -117,21 +93,6 @@ abstract class AbstractService {
 
     public function getTable(): TypedTableSelection {
         return new TypedTableSelection($this->getModelClassName(), $this->tableName, $this->explorer, $this->explorer->getConventions());
-    }
-
-    /**
-     * @param AbstractModel|null $model
-     * @param array $data
-     * @return AbstractModel
-     * @deprecated use storeModel will be removed in 0.3.0
-     */
-    public function store(?AbstractModel $model, array $data): AbstractModel {
-        if ($model) {
-            $this->updateModel($model, $data);
-            return $model;
-        } else {
-            return $this->createNewModel($data);
-        }
     }
 
     public function storeModel(array $data, ?AbstractModel $model = null): AbstractModel {
@@ -158,11 +119,8 @@ abstract class AbstractService {
         }
     }
 
-    /**
+    /*
      * Omits array elements whose keys aren't columns in the table.
-     *
-     * @param array $data
-     * @return array
      */
     protected function filterData(array $data): array {
         $result = [];

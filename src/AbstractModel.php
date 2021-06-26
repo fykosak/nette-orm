@@ -4,9 +4,6 @@ namespace Fykosak\NetteORM;
 
 use Nette\Database\Table\ActiveRow;
 
-/**
- * @author Michal Koutný <xm.koutny@gmail.com>
- */
 abstract class AbstractModel extends ActiveRow {
 
     /**
