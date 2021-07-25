@@ -15,11 +15,13 @@ define('__TEMP__DIR__', __DIR__ . '/../temp');
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-class AbstractTestCase extends TestCase {
+class AbstractTestCase extends TestCase
+{
 
     protected Container $container;
 
-    public function __construct() {
+    public function __construct()
+    {
         Environment::setup();
         error_reporting(~E_DEPRECATED);
         $loader = new ContainerLoader(__TEMP__DIR__, true);
@@ -34,7 +36,8 @@ class AbstractTestCase extends TestCase {
         $this->container = new $class();
     }
 
-    public function setUp() {
+    public function setUp()
+    {
         Environment::lock('DB', __TEMP__DIR__);
         /** @var Explorer $explorer */
         $explorer = $this->container->getByType(Explorer::class);

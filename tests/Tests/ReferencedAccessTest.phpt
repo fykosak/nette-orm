@@ -12,9 +12,11 @@ use Tester\Assert;
 
 require_once __DIR__ . '/AbstractTestCase.php';
 
-class ReferencedAccessTest extends AbstractTestCase {
+class ReferencedAccessTest extends AbstractTestCase
+{
 
-    public function testSuccess(): void {
+    public function testSuccess(): void
+    {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->getTable()->fetch();
@@ -22,7 +24,8 @@ class ReferencedAccessTest extends AbstractTestCase {
         Assert::type(ModelEvent::class, $modelEvent);
     }
 
-    public function testSame(): void {
+    public function testSame(): void
+    {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->getTable()->fetch();
@@ -30,7 +33,8 @@ class ReferencedAccessTest extends AbstractTestCase {
         Assert::same($participant, $newModel);
     }
 
-    public function testNoCandidate(): void {
+    public function testNoCandidate(): void
+    {
         /** @var ServiceEvent $service */
         $service = $this->container->getByType(ServiceEvent::class);
         $event = $service->getTable()->fetch();

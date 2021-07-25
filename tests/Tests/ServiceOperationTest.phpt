@@ -10,9 +10,11 @@ use Tester\Assert;
 
 require_once __DIR__ . '/AbstractTestCase.php';
 
-class ServiceOperationTest extends AbstractTestCase {
+class ServiceOperationTest extends AbstractTestCase
+{
 
-    public function testCreateSuccess(): void {
+    public function testCreateSuccess(): void
+    {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $countBefore = $serviceParticipant->getTable()->count('*');
@@ -25,7 +27,8 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::same('Igor', $newEvent->name);
     }
 
-    public function testCreateError(): void {
+    public function testCreateError(): void
+    {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $countBefore = $serviceParticipant->getTable()->count('*');
@@ -38,7 +41,8 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::same($countBefore, $countAfter);
     }
 
-    public function testFindByPrimary(): void {
+    public function testFindByPrimary(): void
+    {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(1);
@@ -50,7 +54,8 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::null($nullParticipant);
     }
 
-    public function testFindByPrimaryProtection(): void {
+    public function testFindByPrimaryProtection(): void
+    {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(null);
@@ -58,7 +63,8 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::null($participant);
     }
 
-    public function testUpdateSuccess(): void {
+    public function testUpdateSuccess(): void
+    {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(2);
@@ -67,7 +73,8 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::type(ModelParticipant::class, $participant);
     }
 
-    public function testUpdateError(): void {
+    public function testUpdateError(): void
+    {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(2);
@@ -78,7 +85,8 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::same('Bára', $participant->name);
     }
 
-    public function testStoreExists(): void {
+    public function testStoreExists(): void
+    {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(2);
@@ -88,7 +96,8 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::type(ModelParticipant::class, $participant);
     }
 
-    public function testStoreNew(): void {
+    public function testStoreNew(): void
+    {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $newParticipant = $serviceParticipant->storeModel(['event_id' => 1, 'name' => 'Igor'], null);
@@ -96,7 +105,8 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::type(ModelParticipant::class, $newParticipant);
     }
 
-    public function testDelete(): void {
+    public function testDelete(): void
+    {
         /** @var ServiceParticipant $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $participant = $serviceParticipant->findByPrimary(2);
@@ -106,7 +116,8 @@ class ServiceOperationTest extends AbstractTestCase {
         Assert::same($countBefore - 1, $countAfter);
     }
 
-    public function testType(): void {
+    public function testType(): void
+    {
         $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
         $serviceEvent = $this->container->getByType(ServiceEvent::class);
         $event = $serviceEvent->getTable()->fetch();
@@ -115,7 +126,8 @@ class ServiceOperationTest extends AbstractTestCase {
         }, \InvalidArgumentException::class);
     }
 
-    public function testDeleteError(): void {
+    public function testDeleteError(): void
+    {
         $serviceEvent = $this->container->getByType(ServiceEvent::class);
         $event = $serviceEvent->getTable()->fetch();
         Assert::exception(function () use ($event, $serviceEvent) {

@@ -9,9 +9,11 @@ use Tester\Assert;
 
 require_once __DIR__ . '/AbstractTestCase.php';
 
-class ClassLoadTest extends AbstractTestCase {
+class ClassLoadTest extends AbstractTestCase
+{
 
-    public function testAlias(): void {
+    public function testAlias(): void
+    {
         $serviceEvent = $this->container->getByName('orm.event.service');
         Assert::type(AbstractService::class, $serviceEvent);
         Assert::type(ServiceEvent::class, $serviceEvent);
