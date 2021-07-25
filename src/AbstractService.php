@@ -8,7 +8,8 @@ use Nette\Database\Explorer;
 use Nette\SmartObject;
 use PDOException;
 
-abstract class AbstractService {
+abstract class AbstractService
+{
 
     use SmartObject;
 
@@ -17,7 +18,8 @@ abstract class AbstractService {
     public Explorer $explorer;
     private array $columns;
 
-    public final function __construct(string $tableName, string $modelClassName, Explorer $explorer) {
+    public final function __construct(string $tableName, string $modelClassName, Explorer $explorer)
+    {
         $this->tableName = $tableName;
         $this->modelClassName = $modelClassName;
         $this->explorer = $explorer;
@@ -27,7 +29,8 @@ abstract class AbstractService {
      * @param mixed $key
      * @return AbstractModel|null
      */
-    public function findByPrimary($key): ?AbstractModel {
+    public function findByPrimary($key): ?AbstractModel
+    {
         if (is_null($key)) {
             return null;
         }
@@ -41,7 +44,8 @@ abstract class AbstractService {
      * @return AbstractModel
      * @throws ModelException
      */
-    public function createNewModel(array $data): AbstractModel {
+    public function createNewModel(array $data): AbstractModel
+    {
         $modelClassName = $this->getModelClassName();
         $data = $this->filterData($data);
         try {
@@ -58,7 +62,8 @@ abstract class AbstractService {
      * @return bool
      * @throws ModelException
      */
-    public function updateModel(AbstractModel $model, array $data): bool {
+    public function updateModel(AbstractModel $model, array $data): bool
+    {
         try {
             $this->checkType($model);
             $data = $this->filterData($data);
@@ -73,7 +78,8 @@ abstract class AbstractService {
      * @throws ModelException
      * @deprecated
      */
-    public function dispose(AbstractModel $model): void {
+    public function dispose(AbstractModel $model): void
+    {
         $this->disposeModel($model);
     }
 
@@ -81,7 +87,8 @@ abstract class AbstractService {
      * @param AbstractModel $model
      * @throws ModelException
      */
-    public function disposeModel(AbstractModel $model): void {
+    public function disposeModel(AbstractModel $model): void
+    {
         $this->checkType($model);
         try {
             $model->delete();
@@ -91,11 +98,13 @@ abstract class AbstractService {
         }
     }
 
-    public function getTable(): TypedTableSelection {
+    public function getTable(): TypedTableSelection
+    {
         return new TypedTableSelection($this->getModelClassName(), $this->tableName, $this->explorer, $this->explorer->getConventions());
     }
 
-    public function storeModel(array $data, ?AbstractModel $model = null): AbstractModel {
+    public function storeModel(array $data, ?AbstractModel $model = null): AbstractModel
+    {
         if (isset($model)) {
             $this->updateModel($model, $data);
             return $model;
@@ -104,7 +113,8 @@ abstract class AbstractService {
     }
 
     /** @return string|AbstractModel */
-    final public function getModelClassName(): string {
+    final public function getModelClassName(): string
+    {
         return $this->modelClassName;
     }
 
@@ -112,7 +122,8 @@ abstract class AbstractService {
      * @param AbstractModel $model
      * @throws InvalidArgumentException
      */
-    protected function checkType(AbstractModel $model): void {
+    protected function checkType(AbstractModel $model): void
+    {
         $modelClassName = $this->getModelClassName();
         if (!$model instanceof $modelClassName) {
             throw new InvalidArgumentException('Service for class ' . $this->getModelClassName() . ' cannot store ' . get_class($model));
@@ -122,7 +133,8 @@ abstract class AbstractService {
     /*
      * Omits array elements whose keys aren't columns in the table.
      */
-    protected function filterData(array $data): array {
+    protected function filterData(array $data): array
+    {
         $result = [];
         foreach ($this->getColumnMetadata() as $column) {
             $name = $column['name'];
@@ -133,7 +145,8 @@ abstract class AbstractService {
         return $result;
     }
 
-    protected function getColumnMetadata(): array {
+    protected function getColumnMetadata(): array
+    {
         if (!isset($this->columns)) {
             $this->columns = $this->explorer->getConnection()->getDriver()->getColumns($this->tableName);
         }
