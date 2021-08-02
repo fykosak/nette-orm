@@ -1,4 +1,4 @@
-name: PHP (Nette Tester)
+name: PSR12 (PHP codesniffer)
 
 on: [ push, pull_request ]
 
