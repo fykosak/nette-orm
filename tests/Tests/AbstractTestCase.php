@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fykosak\NetteORM\Tests\Tests;
 
 use Fykosak\NetteORM\ORMExtension;
@@ -11,11 +13,11 @@ use Nette\DI\ContainerLoader;
 use Tester\Environment;
 use Tester\TestCase;
 
-define('__TEMP__DIR__', __DIR__ . '/../temp');
+define('TEMP_DIR', __DIR__ . '/../temp');
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-class AbstractTestCase extends TestCase
+abstract class AbstractTestCase extends TestCase
 {
 
     protected Container $container;
@@ -24,7 +26,7 @@ class AbstractTestCase extends TestCase
     {
         Environment::setup();
         error_reporting(~E_DEPRECATED);
-        $loader = new ContainerLoader(__TEMP__DIR__, true);
+        $loader = new ContainerLoader(TEMP_DIR, true);
 
         $class = $loader->load(function (Compiler $compiler) {
 
@@ -36,9 +38,9 @@ class AbstractTestCase extends TestCase
         $this->container = new $class();
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
-        Environment::lock('DB', __TEMP__DIR__);
+        Environment::lock('DB', TEMP_DIR);
         /** @var Explorer $explorer */
         $explorer = $this->container->getByType(Explorer::class);
         $explorer->query("DELETE FROM `participant`;
@@ -59,5 +61,4 @@ VALUES (1,1, 'Adam'),
        (8,3, 'Husák');");
         parent::setUp();
     }
-
 }

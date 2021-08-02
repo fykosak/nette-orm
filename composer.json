@@ -11,7 +11,8 @@
     "ext-gettext": "*"
   },
   "require-dev": {
-    "nette/tester": "^2.4.0"
+    "nette/tester": "^2.4.0",
+    "squizlabs/php_codesniffer": "3.6.0"
   },
   "authors": [
     {
@@ -34,6 +35,7 @@
     }
   },
   "scripts": {
+    "testPSR": "php -e vendor/squizlabs/php_codesniffer/bin/phpcs --standard=PSR12 src/",
     "initTestDatabase": [
       "mysql < tests/resource/schema.sql "
     ],

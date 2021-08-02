@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fykosak\NetteORM;
 
 use Fykosak\NetteORM\Exceptions\ModelException;
@@ -10,7 +12,6 @@ use PDOException;
 
 abstract class AbstractService
 {
-
     use SmartObject;
 
     private string $modelClassName;
@@ -18,7 +19,7 @@ abstract class AbstractService
     public Explorer $explorer;
     private array $columns;
 
-    public final function __construct(string $tableName, string $modelClassName, Explorer $explorer)
+    final public function __construct(string $tableName, string $modelClassName, Explorer $explorer)
     {
         $this->tableName = $tableName;
         $this->modelClassName = $modelClassName;
@@ -100,7 +101,12 @@ abstract class AbstractService
 
     public function getTable(): TypedTableSelection
     {
-        return new TypedTableSelection($this->getModelClassName(), $this->tableName, $this->explorer, $this->explorer->getConventions());
+        return new TypedTableSelection(
+            $this->getModelClassName(),
+            $this->tableName,
+            $this->explorer,
+            $this->explorer->getConventions()
+        );
     }
 
     public function storeModel(array $data, ?AbstractModel $model = null): AbstractModel
@@ -126,7 +132,9 @@ abstract class AbstractService
     {
         $modelClassName = $this->getModelClassName();
         if (!$model instanceof $modelClassName) {
-            throw new InvalidArgumentException('Service for class ' . $this->getModelClassName() . ' cannot store ' . get_class($model));
+            throw new InvalidArgumentException(
+                'Service for class ' . $this->getModelClassName() . ' cannot store ' . get_class($model)
+            );
         }
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fykosak\NetteORM;
 
 use Nette\DI\CompilerExtension;
@@ -20,8 +22,12 @@ class ORMExtension extends CompilerExtension
 
     final protected function registerORMService(string $tableName, array $fieldDefinitions): void
     {
-        $serviceClassName = $fieldDefinitions['serviceClassName'] ?? ($fieldDefinitions['service'] ?? DummyService::class);
-        $modelClassName = $fieldDefinitions['modelClassName'] ?? ($fieldDefinitions['model'] ?? DummyModel::class);
+        $serviceClassName = $fieldDefinitions['serviceClassName']
+            ?? ($fieldDefinitions['service']
+                ?? DummyService::class);
+        $modelClassName = $fieldDefinitions['modelClassName']
+            ?? ($fieldDefinitions['model']
+                ?? DummyModel::class);
 
         $builder = $this->getContainerBuilder();
         $factory = $builder->addDefinition($this->prefix($tableName . '.service'));

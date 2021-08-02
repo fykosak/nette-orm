@@ -1,0 +1,34 @@
+name: PHP (Nette Tester)
+
+on: [ push, pull_request ]
+
+jobs:
+  test:
+    name: PHP 7.4 PSR12
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '7.4' ]
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout
+        with:
+          submodules: recursive
+      - uses: shivammathur/setup-php@v2
+        name: Setup PHP
+        with:
+          php-version: 7.4
+          extensions: curl, mbstring, mysql, soap, xml
+          tools: composer
+          ini-values: session.gc_probability=0, date.timezone="Europe/Prague", display_startup_errors = Off
+      - name: Composer install
+        run: composer install --no-progress --prefer-dist
+      - run: composer run-script testPSR
+        name: Test
+      - if: failure()
+        name: Failure output
+        uses: actions/upload-artifact@v2
+        with:
+          name: output
+          path: tests/**/*.actual
