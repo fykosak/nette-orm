@@ -53,7 +53,7 @@ abstract class AbstractService
             $result = $this->getTable()->insert($data);
             return ($modelClassName)::createFromActiveRow($result);
         } catch (PDOException $exception) {
-            throw new ModelException('Error when storing model.', null, $exception);
+            throw new ModelException('Error when storing model.', 0, $exception);
         }
     }
 
@@ -70,7 +70,7 @@ abstract class AbstractService
             $data = $this->filterData($data);
             return $model->update($data);
         } catch (PDOException $exception) {
-            throw new ModelException('Error when storing model.', null, $exception);
+            throw new ModelException('Error when storing model.', 0, $exception);
         }
     }
 
