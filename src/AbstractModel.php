@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fykosak\NetteORM;
 
 use Nette\Database\Table\ActiveRow;
@@ -8,7 +10,6 @@ abstract class AbstractModel extends ActiveRow
 {
 
     /**
-     * @param ActiveRow $row
      * @return static
      */
     public static function createFromActiveRow(ActiveRow $row): self

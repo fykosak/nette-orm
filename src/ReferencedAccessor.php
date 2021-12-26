@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fykosak\NetteORM;
 
 use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
@@ -9,9 +11,6 @@ final class ReferencedAccessor
 {
 
     /**
-     * @param AbstractModel $model
-     * @param string $modelClassName
-     * @return AbstractModel
      * @throws CannotAccessModelException
      */
     public static function accessModel(AbstractModel $model, string $modelClassName): AbstractModel
@@ -24,7 +23,7 @@ final class ReferencedAccessor
         $candidates = 0;
         $newModel = null;
         foreach ($modelReflection->getMethods() as $method) {
-            $name = (string)$method->getName();
+            $name = $method->getName();
             if ((string)$method->getReturnType() === $modelClassName) {
                 $candidates++;
                 $newModel = $model->{$name}();

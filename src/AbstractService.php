@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fykosak\NetteORM;
 
 use Fykosak\NetteORM\Exceptions\ModelException;
@@ -10,7 +12,6 @@ use PDOException;
 
 abstract class AbstractService
 {
-
     use SmartObject;
 
     private string $modelClassName;
@@ -18,30 +19,21 @@ abstract class AbstractService
     public Explorer $explorer;
     private array $columns;
 
-    public final function __construct(string $tableName, string $modelClassName, Explorer $explorer)
+    final public function __construct(string $tableName, string $modelClassName, Explorer $explorer)
     {
         $this->tableName = $tableName;
         $this->modelClassName = $modelClassName;
         $this->explorer = $explorer;
     }
 
-    /**
-     * @param mixed $key
-     * @return AbstractModel|null
-     */
-    public function findByPrimary($key): ?AbstractModel
+    public function findByPrimary(string|int $key): ?AbstractModel
     {
-        if (is_null($key)) {
-            return null;
-        }
         /** @var AbstractModel|null $result */
         $result = $this->getTable()->get($key);
         return $result;
     }
 
     /**
-     * @param array $data
-     * @return AbstractModel
      * @throws ModelException
      */
     public function createNewModel(array $data): AbstractModel
@@ -57,9 +49,6 @@ abstract class AbstractService
     }
 
     /**
-     * @param AbstractModel $model
-     * @param array $data
-     * @return bool
      * @throws ModelException
      */
     public function updateModel(AbstractModel $model, array $data): bool
@@ -74,7 +63,6 @@ abstract class AbstractService
     }
 
     /**
-     * @param AbstractModel $model
      * @throws ModelException
      * @deprecated
      */
@@ -84,7 +72,6 @@ abstract class AbstractService
     }
 
     /**
-     * @param AbstractModel $model
      * @throws ModelException
      */
     public function disposeModel(AbstractModel $model): void
@@ -100,7 +87,12 @@ abstract class AbstractService
 
     public function getTable(): TypedTableSelection
     {
-        return new TypedTableSelection($this->getModelClassName(), $this->tableName, $this->explorer, $this->explorer->getConventions());
+        return new TypedTableSelection(
+            $this->getModelClassName(),
+            $this->tableName,
+            $this->explorer,
+            $this->explorer->getConventions(),
+        );
     }
 
     public function storeModel(array $data, ?AbstractModel $model = null): AbstractModel
@@ -119,14 +111,15 @@ abstract class AbstractService
     }
 
     /**
-     * @param AbstractModel $model
      * @throws InvalidArgumentException
      */
     protected function checkType(AbstractModel $model): void
     {
         $modelClassName = $this->getModelClassName();
         if (!$model instanceof $modelClassName) {
-            throw new InvalidArgumentException('Service for class ' . $this->getModelClassName() . ' cannot store ' . get_class($model));
+            throw new InvalidArgumentException(
+                sprintf('Service for class %s cannot store %s', $this->getModelClassName(), get_class($model))
+            );
         }
     }
 
