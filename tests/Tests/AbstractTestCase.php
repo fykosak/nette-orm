@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fykosak\NetteORM\Tests\Tests;
 
 use Fykosak\NetteORM\ORMExtension;
 use Nette\Bridges\DatabaseDI\DatabaseExtension;
 use Nette\Database\Explorer;
-use Nette\DI\Compiler;
-use Nette\DI\Container;
-use Nette\DI\ContainerLoader;
-use Tester\Environment;
-use Tester\TestCase;
+use Nette\DI\{
+    Compiler,
+    Container,
+    ContainerLoader
+};
+use Tester\{Environment, TestCase};
 
 define('__TEMP__DIR__', __DIR__ . '/../temp');
 
@@ -41,7 +44,8 @@ class AbstractTestCase extends TestCase
         Environment::lock('DB', __TEMP__DIR__);
         /** @var Explorer $explorer */
         $explorer = $this->container->getByType(Explorer::class);
-        $explorer->query("DELETE FROM `participant`;
+        $explorer->query(
+            "DELETE FROM `participant`;
 DELETE FROM `event`;
 
 INSERT INTO `event` (event_id, begin, end)
@@ -56,7 +60,8 @@ VALUES (1,1, 'Adam'),
        (5,2, 'Emil'),
        (6,3, 'Fero'),
        (7,3, 'Gustav'),
-       (8,3, 'Husák');");
+       (8,3, 'Husák');"
+        );
         parent::setUp();
     }
 

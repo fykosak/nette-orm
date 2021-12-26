@@ -8,11 +8,7 @@ use Nette\Database\Table\ActiveRow;
 
 abstract class AbstractModel extends ActiveRow
 {
-
-    /**
-     * @return static
-     */
-    public static function createFromActiveRow(ActiveRow $row): self
+    public static function createFromActiveRow(ActiveRow $row): static
     {
         if ($row instanceof static) {
             return $row;

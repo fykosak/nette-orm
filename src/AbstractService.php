@@ -14,16 +14,13 @@ abstract class AbstractService
 {
     use SmartObject;
 
-    private string $modelClassName;
-    private string $tableName;
-    public Explorer $explorer;
     private array $columns;
 
-    final public function __construct(string $tableName, string $modelClassName, Explorer $explorer)
-    {
-        $this->tableName = $tableName;
-        $this->modelClassName = $modelClassName;
-        $this->explorer = $explorer;
+    final public function __construct(
+        private readonly string $tableName,
+        private readonly string $modelClassName,
+        public Explorer $explorer,
+    ) {
     }
 
     public function findByPrimary(string|int $key): ?AbstractModel

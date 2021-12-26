@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '7.4', '8.0']
+        php: [ '7.1']
         database: [ 'mysql' ]
     steps:
       # MariaDB container has to be started in advance to initialize itself before using it.
@@ -35,7 +35,7 @@ jobs:
       - run: composer run-script initTestDatabase
         name: Init test database
       - run: composer run-script testCoverage
-        name: Test 
+        name: Test
       - name: Archive code coverage results
         uses: actions/upload-artifact@v2
         with:

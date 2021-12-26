@@ -13,13 +13,13 @@ use Nette\Database\Table\Selection;
  */
 class TypedTableSelection extends Selection
 {
-
-    protected string $modelClassName;
-
-    public function __construct(string $modelClassName, string $table, Explorer $explorer, Conventions $conventions)
-    {
+    public function __construct(
+        protected readonly string $modelClassName,
+        string $table,
+        Explorer $explorer,
+        Conventions $conventions,
+    ) {
         parent::__construct($explorer, $conventions, $table);
-        $this->modelClassName = $modelClassName;
     }
 
     /**

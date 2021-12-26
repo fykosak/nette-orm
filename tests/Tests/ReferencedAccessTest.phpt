@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fykosak\NetteORM\Tests\Tests;
 
 use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
