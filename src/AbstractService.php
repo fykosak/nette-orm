@@ -23,8 +23,11 @@ abstract class AbstractService
     ) {
     }
 
-    public function findByPrimary(string|int $key): ?AbstractModel
+    public function findByPrimary(string|int|null $key): ?AbstractModel
     {
+        if (!isset($key)) {
+            return null;
+        }
         /** @var AbstractModel|null $result */
         $result = $this->getTable()->get($key);
         return $result;
