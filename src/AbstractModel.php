@@ -10,7 +10,6 @@ abstract class AbstractModel extends ActiveRow
 {
 
     /**
-     * @param ActiveRow $row
      * @return static
      */
     public static function createFromActiveRow(ActiveRow $row): self

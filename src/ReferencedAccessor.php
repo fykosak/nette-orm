@@ -11,11 +11,7 @@ final class ReferencedAccessor
 {
 
     /**
-     * @param AbstractModel $model
-     * @param string $modelClassName
-     * @return AbstractModel
      * @throws CannotAccessModelException
-     * @throws \ReflectionException
      */
     public static function accessModel(AbstractModel $model, string $modelClassName): AbstractModel
     {
@@ -27,7 +23,7 @@ final class ReferencedAccessor
         $candidates = 0;
         $newModel = null;
         foreach ($modelReflection->getMethods() as $method) {
-            $name = (string)$method->getName();
+            $name = $method->getName();
             if ((string)$method->getReturnType() === $modelClassName) {
                 $candidates++;
                 $newModel = $model->{$name}();

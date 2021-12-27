@@ -41,8 +41,6 @@ abstract class AbstractService
     }
 
     /**
-     * @param array $data
-     * @return AbstractModel
      * @throws ModelException
      */
     public function createNewModel(array $data): AbstractModel
@@ -58,9 +56,6 @@ abstract class AbstractService
     }
 
     /**
-     * @param AbstractModel $model
-     * @param array $data
-     * @return bool
      * @throws ModelException
      */
     public function updateModel(AbstractModel $model, array $data): bool
@@ -75,7 +70,6 @@ abstract class AbstractService
     }
 
     /**
-     * @param AbstractModel $model
      * @throws ModelException
      * @deprecated
      */
@@ -85,7 +79,6 @@ abstract class AbstractService
     }
 
     /**
-     * @param AbstractModel $model
      * @throws ModelException
      */
     public function disposeModel(AbstractModel $model): void
@@ -125,7 +118,6 @@ abstract class AbstractService
     }
 
     /**
-     * @param AbstractModel $model
      * @throws InvalidArgumentException
      */
     protected function checkType(AbstractModel $model): void
