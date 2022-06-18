@@ -2,11 +2,11 @@ services:
     - Nette\Caching\Storages\FileStorage('../temp')
 orm:
     event:
-        modelClassName: Fykosak\NetteORM\Tests\ORM\ModelEvent
-        serviceClassName: Fykosak\NetteORM\Tests\ORM\ServiceEvent
+        modelClassName: Fykosak\NetteORM\Tests\ORM\EventModel
+        serviceClassName: Fykosak\NetteORM\Tests\ORM\EventService
     participant:
-        model: Fykosak\NetteORM\Tests\ORM\ModelParticipant
-        service: Fykosak\NetteORM\Tests\ORM\ServiceParticipant
+        model: Fykosak\NetteORM\Tests\ORM\ParticipantModel
+        service: Fykosak\NetteORM\Tests\ORM\ParticipantService
 
 includes:
     - config.local.neon

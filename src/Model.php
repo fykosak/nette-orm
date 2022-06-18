@@ -6,7 +6,7 @@ namespace Fykosak\NetteORM;
 
 use Nette\Database\Table\ActiveRow;
 
-abstract class AbstractModel extends ActiveRow
+abstract class Model extends ActiveRow
 {
 
     /**

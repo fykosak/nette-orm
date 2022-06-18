@@ -7,7 +7,7 @@ namespace Fykosak\NetteORM;
 use Nette\DI\CompilerExtension;
 use Nette\NotImplementedException;
 
-class ORMExtension extends CompilerExtension
+class Extension extends CompilerExtension
 {
 
     /**

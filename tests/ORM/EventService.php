@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM\Tests\ORM;
 
-use Fykosak\NetteORM\AbstractModel;
+use Fykosak\NetteORM\Service;
 
-class ModelEvent extends AbstractModel
+class EventService extends Service
 {
-
 }

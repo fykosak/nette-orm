@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Fykosak\NetteORM;
 
 use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
-use ReflectionClass;
 
 final class ReferencedAccessor
 {
@@ -13,13 +12,13 @@ final class ReferencedAccessor
     /**
      * @throws CannotAccessModelException
      */
-    public static function accessModel(AbstractModel $model, string $modelClassName): AbstractModel
+    public static function accessModel(Model $model, string $modelClassName): Model
     {
         // model is already instance of desired model
         if ($model instanceof $modelClassName) {
             return $model;
         }
-        $modelReflection = new ReflectionClass($model);
+        $modelReflection = new \ReflectionClass($model);
         $candidates = 0;
         $newModel = null;
         foreach ($modelReflection->getMethods() as $method) {

@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM;
 
-final class DummyService extends AbstractService
+final class DummyService extends Service
 {
 }

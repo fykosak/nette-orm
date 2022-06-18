@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Fykosak\NetteORM;
 
 use Fykosak\NetteORM\Exceptions\ModelException;
-use InvalidArgumentException;
 use Nette\Database\Explorer;
 use Nette\SmartObject;
-use PDOException;
 
-abstract class AbstractService
+abstract class Service
 {
     use SmartObject;
 
@@ -28,14 +26,14 @@ abstract class AbstractService
 
     /**
      * @param mixed $key
-     * @return AbstractModel|null
+     * @return Model|null
      */
-    public function findByPrimary($key): ?AbstractModel
+    public function findByPrimary($key): ?Model
     {
         if (is_null($key)) {
             return null;
         }
-        /** @var AbstractModel|null $result */
+        /** @var Model|null $result */
         $result = $this->getTable()->get($key);
         return $result;
     }
@@ -43,14 +41,14 @@ abstract class AbstractService
     /**
      * @throws ModelException
      */
-    public function createNewModel(array $data): AbstractModel
+    public function createNewModel(array $data): Model
     {
         $modelClassName = $this->getModelClassName();
         $data = $this->filterData($data);
         try {
             $result = $this->getTable()->insert($data);
             return ($modelClassName)::createFromActiveRow($result);
-        } catch (PDOException $exception) {
+        } catch (\PDOException $exception) {
             throw new ModelException('Error when storing model.', 0, $exception);
         }
     }
@@ -58,13 +56,13 @@ abstract class AbstractService
     /**
      * @throws ModelException
      */
-    public function updateModel(AbstractModel $model, array $data): bool
+    public function updateModel(Model $model, array $data): bool
     {
         try {
             $this->checkType($model);
             $data = $this->filterData($data);
             return $model->update($data);
-        } catch (PDOException $exception) {
+        } catch (\PDOException $exception) {
             throw new ModelException('Error when storing model.', 0, $exception);
         }
     }
@@ -73,7 +71,7 @@ abstract class AbstractService
      * @throws ModelException
      * @deprecated
      */
-    public function dispose(AbstractModel $model): void
+    public function dispose(Model $model): void
     {
         $this->disposeModel($model);
     }
@@ -81,20 +79,20 @@ abstract class AbstractService
     /**
      * @throws ModelException
      */
-    public function disposeModel(AbstractModel $model): void
+    public function disposeModel(Model $model): void
     {
         $this->checkType($model);
         try {
             $model->delete();
-        } catch (PDOException $exception) {
+        } catch (\PDOException $exception) {
             $code = $exception->getCode();
             throw new ModelException("$code: Error when deleting a model.");
         }
     }
 
-    public function getTable(): TypedTableSelection
+    final public function getTable(): TypedSelection
     {
-        return new TypedTableSelection(
+        return new TypedSelection(
             $this->getModelClassName(),
             $this->tableName,
             $this->explorer,
@@ -102,7 +100,7 @@ abstract class AbstractService
         );
     }
 
-    public function storeModel(array $data, ?AbstractModel $model = null): AbstractModel
+    public function storeModel(array $data, ?Model $model = null): Model
     {
         if (isset($model)) {
             $this->updateModel($model, $data);
@@ -111,20 +109,20 @@ abstract class AbstractService
         return $this->createNewModel($data);
     }
 
-    /** @return string|AbstractModel */
+    /** @return string|Model */
     final public function getModelClassName(): string
     {
         return $this->modelClassName;
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
-    protected function checkType(AbstractModel $model): void
+    protected function checkType(Model $model): void
     {
         $modelClassName = $this->getModelClassName();
         if (!$model instanceof $modelClassName) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 'Service for class ' . $this->getModelClassName() . ' cannot store ' . get_class($model)
             );
         }

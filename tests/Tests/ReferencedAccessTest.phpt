@@ -6,45 +6,44 @@ namespace Fykosak\NetteORM\Tests\Tests;
 
 use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
 use Fykosak\NetteORM\ReferencedAccessor;
-use Fykosak\NetteORM\Tests\ORM\ModelEvent;
-use Fykosak\NetteORM\Tests\ORM\ModelParticipant;
-use Fykosak\NetteORM\Tests\ORM\ServiceEvent;
-use Fykosak\NetteORM\Tests\ORM\ServiceParticipant;
+use Fykosak\NetteORM\Tests\ORM\EventModel;
+use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
+use Fykosak\NetteORM\Tests\ORM\EventService;
+use Fykosak\NetteORM\Tests\ORM\ParticipantService;
 use Tester\Assert;
 
-require_once __DIR__ . '/AbstractTestCase.php';
+require_once __DIR__ . '/TestCase.php';
 
-class ReferencedAccessTest extends AbstractTestCase
+class ReferencedAccessTest extends TestCase
 {
 
     public function testSuccess(): void
     {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
+        /** @var ParticipantService $serviceParticipant */
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $participant = $serviceParticipant->getTable()->fetch();
-        $modelEvent = ReferencedAccessor::accessModel($participant, ModelEvent::class);
-        Assert::type(ModelEvent::class, $modelEvent);
+        $modelEvent = ReferencedAccessor::accessModel($participant, EventModel::class);
+        Assert::type(EventModel::class, $modelEvent);
     }
 
     public function testSame(): void
     {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
+        /** @var ParticipantService $serviceParticipant */
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $participant = $serviceParticipant->getTable()->fetch();
-        $newModel = ReferencedAccessor::accessModel($participant, ModelParticipant::class);
+        $newModel = ReferencedAccessor::accessModel($participant, ParticipantModel::class);
         Assert::same($participant, $newModel);
     }
 
     public function testNoCandidate(): void
     {
-        /** @var ServiceEvent $service */
-        $service = $this->container->getByType(ServiceEvent::class);
+        /** @var EventService $service */
+        $service = $this->container->getByType(EventService::class);
         $event = $service->getTable()->fetch();
         Assert::exception(function () use ($event) {
-            ReferencedAccessor::accessModel($event, ModelParticipant::class);
+            ReferencedAccessor::accessModel($event, ParticipantModel::class);
         }, CannotAccessModelException::class);
     }
-
 }
 
 $testCase = new ReferencedAccessTest();

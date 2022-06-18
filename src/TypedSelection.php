@@ -8,7 +8,7 @@ use Nette\Database\Conventions;
 use Nette\Database\Explorer;
 use Nette\Database\Table\Selection;
 
-class TypedTableSelection extends Selection
+class TypedSelection extends Selection
 {
 
     protected string $modelClassName;
@@ -19,7 +19,7 @@ class TypedTableSelection extends Selection
         $this->modelClassName = $modelClassName;
     }
 
-    protected function createRow(array $row): AbstractModel
+    protected function createRow(array $row): Model
     {
         $className = $this->modelClassName;
         return new $className($row, $this);
