@@ -10,10 +10,9 @@ use Nette\MemberAccessException;
 
 abstract class Model extends ActiveRow
 {
+    public ?Mapper $mapper;
 
-    public Mapper $mapper;
-
-    public function __construct(array $data, Selection $table, Mapper $mapper)
+    public function __construct(array $data, Selection $table, ?Mapper $mapper = null)
     {
         parent::__construct($data, $table);
         $this->mapper = $mapper;
@@ -23,10 +22,10 @@ abstract class Model extends ActiveRow
      * @return ActiveRow|mixed
      * @throws MemberAccessException
      */
-    public function &__get($key)
+    public function &__get(string $key)
     {
         $value = parent::__get($key);
-        if ($value instanceof ActiveRow) {
+        if ($value instanceof ActiveRow && isset($this->mapper)) {
             $definition = $this->mapper->getDefinition($key);
             if ($definition) {
                 $className = $definition['model'];
@@ -39,7 +38,7 @@ abstract class Model extends ActiveRow
     /**
      * @return static
      */
-    public static function createFromActiveRow(ActiveRow $row, Mapper $mapper): self
+    public static function createFromActiveRow(ActiveRow $row, ?Mapper $mapper = null): self
     {
         if ($row instanceof static) {
             return $row;
