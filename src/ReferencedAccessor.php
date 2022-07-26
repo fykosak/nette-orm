@@ -26,7 +26,13 @@ final class ReferencedAccessor
 
         if ($doc !== false) {
             foreach (explode("\n", $doc) as $line) {
-                if (preg_match('/\*\s+@property-read\s+([A-Z][A-Za-z0-9_]+)\s+\$([A-Za-z0-9_]+)/', $line, $matches)) {
+                if (
+                    preg_match(
+                        '/\*\s+@property-read\s+([A-Z][A-Za-z0-9_>|]+)\s+\$?([A-Za-z0-9_]+)/',
+                        $line,
+                        $matches
+                    )
+                ) {
                     [, $returnType, $property] = $matches;
                     $returnType = Reflection::expandClassName($returnType, $modelReflection);
 
