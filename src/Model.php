@@ -5,31 +5,29 @@ declare(strict_types=1);
 namespace Fykosak\NetteORM;
 
 use Nette\Database\Table\ActiveRow;
-use Nette\Database\Table\Selection;
 use Nette\MemberAccessException;
+use Nette\Utils\Reflection;
 
 abstract class Model extends ActiveRow
 {
-    public ?Mapper $mapper;
-
-    public function __construct(array $data, Selection $table, ?Mapper $mapper = null)
-    {
-        parent::__construct($data, $table);
-        $this->mapper = $mapper;
-    }
-
     /**
      * @return ActiveRow|mixed
-     * @throws MemberAccessException
+     * @throws MemberAccessException|\ReflectionException
      */
     public function &__get(string $key)
     {
         $value = parent::__get($key);
-        if ($value instanceof ActiveRow && isset($this->mapper)) {
-            $definition = $this->mapper->getDefinition($key);
-            if ($definition) {
-                $className = $definition['model'];
-                $value = new $className($value->toArray(), $value->getTable(), $this->mapper);
+        $selfReflection = new \ReflectionClass(static::class);
+        $docs = ModelDocParser::parseModelDoc($selfReflection);
+        if (!is_null($value) && isset($docs[$key])) {
+            $item = $docs[$key];
+            if ($value instanceof ActiveRow && $item['type']->isClass()) {
+                $returnType = new \ReflectionClass(
+                    Reflection::expandClassName($item['type']->getSingleName(), $selfReflection)
+                );
+                if ($returnType->isSubclassOf(self::class)) {
+                    $value = $returnType->newInstance($value->toArray(), $value->getTable());
+                }
             }
         }
         return $value;
@@ -38,11 +36,11 @@ abstract class Model extends ActiveRow
     /**
      * @return static
      */
-    public static function createFromActiveRow(ActiveRow $row, ?Mapper $mapper = null): self
+    public static function createFromActiveRow(ActiveRow $row): self
     {
         if ($row instanceof static) {
             return $row;
         }
-        return new static($row->toArray(), $row->getTable(), $mapper);
+        return new static($row->toArray(), $row->getTable());
     }
 }

@@ -15,7 +15,7 @@ abstract class Service
     private string $modelClassName;
     private string $tableName;
     public Explorer $explorer;
-    public Mapper $mapper;
+    private Mapper $mapper;
     private array $columns;
 
     final public function __construct(string $tableName, string $modelClassName, Explorer $explorer, Mapper $mapper)
@@ -49,7 +49,7 @@ abstract class Service
         $data = $this->filterData($data);
         try {
             $result = $this->getTable()->insert($data);
-            return ($modelClassName)::createFromActiveRow($result, $this->mapper);
+            return ($modelClassName)::createFromActiveRow($result);
         } catch (\PDOException $exception) {
             throw new ModelException('Error when storing model.', 0, $exception);
         }

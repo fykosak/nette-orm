@@ -13,37 +13,33 @@ final class ReferencedAccessor
     /**
      * @throws CannotAccessModelException
      */
-    public static function accessModel(Model $model, string $modelClassName): Model
+    public static function accessModel(Model $model, string $modelClassName): ?Model
     {
         // model is already instance of desired model
         if ($model instanceof $modelClassName) {
             return $model;
         }
         $modelReflection = new \ReflectionClass($model);
-        $candidates = 0;
-        $newModel = null;
-        $doc = $modelReflection->getDocComment();
 
-        if ($doc !== false) {
-            foreach (explode("\n", $doc) as $line) {
-                if (
-                    preg_match(
-                        '/\*\s+@property-read\s+([A-Z][A-Za-z0-9_>|]+)\s+\$?([A-Za-z0-9_]+)/',
-                        $line,
-                        $matches
-                    )
-                ) {
-                    [, $returnType, $property] = $matches;
-                    $returnType = Reflection::expandClassName($returnType, $modelReflection);
-
-                    if ($returnType === $modelClassName) {
-                        $candidates++;
-                        $newModel = $model->{$property};
+        $properties = ModelDocParser::parseModelDoc($modelReflection);
+        foreach ($properties as $item) {
+            $property = $item['property'];
+            $type = $item['type'];
+            if ($type->isClass()) {
+                if (Reflection::expandClassName($type->getSingleName(), $modelReflection) === $modelClassName) {
+                    $newModel = $model->{$property};
+                    if ($newModel) {
+                        return $newModel;
                     }
+                    if ($type->allows('null')) {
+                        return null;
+                    }
+                    throw new CannotAccessModelException($modelClassName, $model);
                 }
             }
         }
-
+        $candidates = 0;
+        $newModel = null;
         foreach ($modelReflection->getMethods() as $method) {
             $name = $method->getName();
             if ((string)$method->getReturnType() === $modelClassName) {

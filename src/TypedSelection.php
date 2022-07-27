@@ -29,6 +29,6 @@ class TypedSelection extends Selection
     protected function createRow(array $row): Model
     {
         $className = $this->mapper->getDefinition($this->name)['model'];
-        return new $className($row, $this, $this->mapper);
+        return new $className($row, $this);
     }
 }
