@@ -5,11 +5,26 @@ declare(strict_types=1);
 namespace Fykosak\NetteORM;
 
 use Nette\Database\Table\ActiveRow;
+use Nette\Database\Table\Selection;
 use Nette\MemberAccessException;
 use Nette\Utils\Reflection;
 
+/**
+ * @method TypedGroupedSelection related(string $key, ?string $throughColumn = null)
+ */
 abstract class Model extends ActiveRow
 {
+
+    public function __construct(array $data, Selection $table)
+    {
+        if (!$table instanceof TypedGroupedSelection && !$table instanceof TypedSelection) {
+            throw new \InvalidArgumentException(
+                'Selection must be a instance of TypedSelection or TypedGroupedSelection'
+            );
+        }
+        parent::__construct($data, $table);
+    }
+
     /**
      * @return ActiveRow|mixed
      * @throws MemberAccessException|\ReflectionException

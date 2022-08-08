@@ -12,16 +12,14 @@ abstract class Service
 {
     use SmartObject;
 
-    private string $modelClassName;
     private string $tableName;
     public Explorer $explorer;
     private Mapper $mapper;
     private array $columns;
 
-    final public function __construct(string $tableName, string $modelClassName, Explorer $explorer, Mapper $mapper)
+    final public function __construct(string $tableName, Explorer $explorer, Mapper $mapper)
     {
         $this->tableName = $tableName;
-        $this->modelClassName = $modelClassName;
         $this->explorer = $explorer;
         $this->mapper = $mapper;
     }
@@ -95,11 +93,10 @@ abstract class Service
     final public function getTable(): TypedSelection
     {
         return new TypedSelection(
-            $this->getModelClassName(),
-            $this->tableName,
+            $this->mapper,
             $this->explorer,
             $this->explorer->getConventions(),
-            $this->mapper,
+            $this->tableName
         );
     }
 
@@ -115,7 +112,7 @@ abstract class Service
     /** @return string|Model */
     final public function getModelClassName(): string
     {
-        return $this->modelClassName;
+        return $this->mapper->getDefinition($this->tableName)['model'];
     }
 
     /**

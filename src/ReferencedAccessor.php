@@ -22,19 +22,21 @@ final class ReferencedAccessor
         $modelReflection = new \ReflectionClass($model);
 
         $properties = ModelDocParser::parseModelDoc($modelReflection);
-        foreach ($properties as $item) {
-            $property = $item['property'];
-            $type = $item['type'];
-            if ($type->isClass()) {
-                if (Reflection::expandClassName($type->getSingleName(), $modelReflection) === $modelClassName) {
-                    $newModel = $model->{$property};
-                    if ($newModel) {
-                        return $newModel;
+        if ($properties) {
+            foreach ($properties as $item) {
+                $property = $item['property'];
+                $type = $item['type'];
+                if ($type->isClass()) {
+                    if (Reflection::expandClassName($type->getSingleName(), $modelReflection) === $modelClassName) {
+                        $newModel = $model->{$property};
+                        if ($newModel) {
+                            return $newModel;
+                        }
+                        if ($type->allows('null')) {
+                            return null;
+                        }
+                        throw new CannotAccessModelException($modelClassName, $model);
                     }
-                    if ($type->allows('null')) {
-                        return null;
-                    }
-                    throw new CannotAccessModelException($modelClassName, $model);
                 }
             }
         }

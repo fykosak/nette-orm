@@ -40,9 +40,9 @@ class Extension extends CompilerExtension
         $builder = $this->getContainerBuilder();
         $factory = $builder->addDefinition($this->prefix($tableName . '.service'));
         if (isset($fieldDefinitions['context'])) {
-            $factory->setFactory($serviceClassName, [$tableName, $modelClassName, $fieldDefinitions['context']]);
+            $factory->setFactory($serviceClassName, [$tableName, $fieldDefinitions['context']]);
         } else {
-            $factory->setFactory($serviceClassName, [$tableName, $modelClassName]);
+            $factory->setFactory($serviceClassName, [$tableName]);
         }
     }
 }
