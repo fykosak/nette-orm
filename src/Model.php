@@ -33,7 +33,7 @@ abstract class Model extends ActiveRow
     {
         $value = parent::__get($key);
         $selfReflection = new \ReflectionClass(static::class);
-        $docs = ModelDocParser::parseModelDoc($selfReflection);
+        $docs = ModelParser::parseModelDoc($selfReflection);
         if (!is_null($value) && isset($docs[$key])) {
             $item = $docs[$key];
             if ($value instanceof ActiveRow && $item['type']->isClass()) {
