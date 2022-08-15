@@ -30,50 +30,7 @@ abstract class Service
      */
     public function findByPrimary($key): ?Model
     {
-        if (is_null($key)) {
-            return null;
-        }
-        /** @var Model|null $result */
-        $result = $this->getTable()->get($key);
-        return $result;
-    }
-
-    /**
-     * @throws ModelException
-     */
-    public function createNewModel(array $data): Model
-    {
-        $modelClassName = $this->getModelClassName();
-        $data = $this->filterData($data);
-        try {
-            $result = $this->getTable()->insert($data);
-            return ($modelClassName)::createFromActiveRow($result);
-        } catch (\PDOException $exception) {
-            throw new ModelException('Error when storing model.', 0, $exception);
-        }
-    }
-
-    /**
-     * @throws ModelException
-     */
-    public function updateModel(Model $model, array $data): bool
-    {
-        try {
-            $this->checkType($model);
-            $data = $this->filterData($data);
-            return $model->update($data);
-        } catch (\PDOException $exception) {
-            throw new ModelException('Error when storing model.', 0, $exception);
-        }
-    }
-
-    /**
-     * @throws ModelException
-     * @deprecated
-     */
-    public function dispose(Model $model): void
-    {
-        $this->disposeModel($model);
+        return isset($key) ? $this->getTable()->get($key) : null;
     }
 
     /**
@@ -81,12 +38,15 @@ abstract class Service
      */
     public function disposeModel(Model $model): void
     {
-        $this->checkType($model);
         try {
+            $this->checkType($model);
             $model->delete();
         } catch (\PDOException $exception) {
-            $code = $exception->getCode();
-            throw new ModelException("$code: Error when deleting a model.");
+            throw new ModelException(
+                'Error when deleting a model.',
+                $exception->getCode(),
+                $exception
+            );
         }
     }
 
@@ -102,11 +62,17 @@ abstract class Service
 
     public function storeModel(array $data, ?Model $model = null): Model
     {
-        if (isset($model)) {
-            $this->updateModel($model, $data);
-            return $model;
+        try {
+            $dataSet = $this->filterData($data);
+            if (isset($model)) {
+                $this->checkType($model);
+                $model->update($dataSet);
+                return $model;
+            }
+            return $this->getTable()->insert($dataSet);
+        } catch (\PDOException $exception) {
+            throw new ModelException('Error when storing model.', $exception->getCode(), $exception);
         }
-        return $this->createNewModel($data);
     }
 
     /** @return string|Model */
@@ -122,9 +88,7 @@ abstract class Service
     {
         $modelClassName = $this->getModelClassName();
         if (!$model instanceof $modelClassName) {
-            throw new \InvalidArgumentException(
-                'Service for class ' . $this->getModelClassName() . ' cannot store ' . get_class($model)
-            );
+            throw new ModelException('Service for class ' . $modelClassName . ' cannot store ' . get_class($model));
         }
     }
 

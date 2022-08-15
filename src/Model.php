@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM;
 
+use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
 use Nette\MemberAccessException;
@@ -33,7 +34,7 @@ abstract class Model extends ActiveRow
     {
         $value = parent::__get($key);
         $selfReflection = new \ReflectionClass(static::class);
-        $docs = ModelParser::parseModelDoc($selfReflection);
+        $docs = ModelRelationsParser::parseModelDoc($selfReflection);
         if (!is_null($value) && isset($docs[$key])) {
             $item = $docs[$key];
             if ($value instanceof ActiveRow && $item['type']->isClass()) {
@@ -46,6 +47,42 @@ abstract class Model extends ActiveRow
             }
         }
         return $value;
+    }
+
+    /**
+     * @template T
+     * @param class-string<T>|string $requestedModel
+     * @return ?T
+     * @throws CannotAccessModelException|\ReflectionException
+     */
+    public function getReferencedModel(string $requestedModel): ?Model
+    {
+        // model is already instance of desired model
+        if ($this instanceof $requestedModel) {
+            return $this;
+        }
+
+        $path = ModelRelationsParser::getPath(
+            new \ReflectionClass($this),
+            new \ReflectionClass($requestedModel),
+            []
+        );
+        $newModel = $this;
+        if ($path) {
+            foreach ($path as $item) {
+                $newModel = $item['type'] === 'property'
+                    ? $newModel->{$item['accessor']}
+                    : $newModel->{$item['accessor']}();
+                if (!$newModel) {
+                    if ($item['nullable']) {
+                        return null;
+                    }
+                    throw new CannotAccessModelException($requestedModel, $this);
+                }
+            }
+            return $newModel;
+        }
+        throw new CannotAccessModelException($requestedModel, $this);
     }
 
     /**

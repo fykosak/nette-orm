@@ -7,7 +7,7 @@ namespace Fykosak\NetteORM;
 use Nette\Utils\Reflection;
 use Nette\Utils\Type;
 
-class ModelParser
+class ModelRelationsParser
 {
     /**
      * @param \ReflectionClass $modelReflection
@@ -80,7 +80,7 @@ class ModelParser
      */
     public static function resolveReferencedProperties(\ReflectionClass $model): array
     {
-        $properties = ModelParser::parseModelDoc($model);
+        $properties = ModelRelationsParser::parseModelDoc($model);
         $items = [];
         if ($properties) {
             foreach ($properties as $item) {
@@ -103,5 +103,35 @@ class ModelParser
             }
         }
         return $items;
+    }
+
+    /**
+     * @return \ReflectionClass[][]|null|string[][]
+     * @throws \ReflectionException
+     */
+    public static function getPath(
+        \ReflectionClass $model,
+        \ReflectionClass $requestedModel,
+        array $classPath
+    ): ?array {
+        $items = array_merge(
+            self::resolveReferencedProperties($model),
+            self::resolveReferencedMethods($model)
+        );
+
+        if (isset($items[$requestedModel->getName()])) {
+            return [$items[$requestedModel->getName()]];
+        }
+        $classPath[] = $model->getName();
+        foreach ($items as $key => $item) {
+            if (in_array($key, $classPath)) {
+                continue;
+            }
+            $path = self::getPath($item['reflection'], $requestedModel, $classPath);
+            if ($path) {
+                return [$item, ...$path];
+            }
+        }
+        return null;
     }
 }
