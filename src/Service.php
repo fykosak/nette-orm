@@ -44,7 +44,7 @@ abstract class Service
         } catch (\PDOException $exception) {
             throw new ModelException(
                 'Error when deleting a model.',
-                $exception->getCode(),
+                (int)$exception->getCode(),
                 $exception
             );
         }
@@ -71,7 +71,7 @@ abstract class Service
             }
             return $this->getTable()->insert($dataSet);
         } catch (\PDOException $exception) {
-            throw new ModelException('Error when storing model.', $exception->getCode(), $exception);
+            throw new ModelException('Error when storing model.', (int)$exception->getCode(), $exception);
         }
     }
 
