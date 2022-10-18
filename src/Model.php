@@ -15,7 +15,6 @@ use Nette\Utils\Reflection;
  */
 abstract class Model extends ActiveRow
 {
-
     public function __construct(array $data, Selection $table)
     {
         if (!$table instanceof TypedGroupedSelection && !$table instanceof TypedSelection) {

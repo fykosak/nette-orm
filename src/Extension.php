@@ -10,7 +10,6 @@ use Nette\NotImplementedException;
 
 class Extension extends CompilerExtension
 {
-
     /**
      * @throws NotImplementedException
      */
