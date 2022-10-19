@@ -37,7 +37,7 @@ class TableSelectionTest extends TestCase
         $participant = $serviceEvent->getTable()->fetch();
 
         Assert::type(ParticipantModel::class, $participant);
-        $event = $participant->getEvent();
+        $event = $participant->event;
         Assert::type(EventModel::class, $event);
     }
 
@@ -46,10 +46,7 @@ class TableSelectionTest extends TestCase
         /** @var ParticipantService $serviceEvent */
         $serviceEvent = $this->container->getByType(EventService::class);
         $event = $serviceEvent->getTable()->fetch();
-        $row = $event->related('participant')->fetch();
-
-        Assert::false($row instanceof ParticipantModel);
-        $participant = ParticipantModel::createFromActiveRow($row);
+        $participant = $event->related('participant')->fetch();
         Assert::type(ParticipantModel::class, $participant);
     }
 

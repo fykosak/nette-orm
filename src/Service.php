@@ -12,68 +12,21 @@ abstract class Service
 {
     use SmartObject;
 
-    private string $modelClassName;
     private string $tableName;
     public Explorer $explorer;
+    private Mapper $mapper;
     private array $columns;
 
-    final public function __construct(string $tableName, string $modelClassName, Explorer $explorer)
+    final public function __construct(string $tableName, Explorer $explorer, Mapper $mapper)
     {
         $this->tableName = $tableName;
-        $this->modelClassName = $modelClassName;
         $this->explorer = $explorer;
+        $this->mapper = $mapper;
     }
 
-    /**
-     * @param mixed $key
-     * @return Model|null
-     */
-    public function findByPrimary($key): ?Model
+    public function findByPrimary(int|string|null $key): ?Model
     {
-        if (is_null($key)) {
-            return null;
-        }
-        /** @var Model|null $result */
-        $result = $this->getTable()->get($key);
-        return $result;
-    }
-
-    /**
-     * @throws ModelException
-     */
-    public function createNewModel(array $data): Model
-    {
-        $modelClassName = $this->getModelClassName();
-        $data = $this->filterData($data);
-        try {
-            $result = $this->getTable()->insert($data);
-            return ($modelClassName)::createFromActiveRow($result);
-        } catch (\PDOException $exception) {
-            throw new ModelException('Error when storing model.', 0, $exception);
-        }
-    }
-
-    /**
-     * @throws ModelException
-     */
-    public function updateModel(Model $model, array $data): bool
-    {
-        try {
-            $this->checkType($model);
-            $data = $this->filterData($data);
-            return $model->update($data);
-        } catch (\PDOException $exception) {
-            throw new ModelException('Error when storing model.', 0, $exception);
-        }
-    }
-
-    /**
-     * @throws ModelException
-     * @deprecated
-     */
-    public function dispose(Model $model): void
-    {
-        $this->disposeModel($model);
+        return isset($key) ? $this->getTable()->get($key) : null;
     }
 
     /**
@@ -81,38 +34,47 @@ abstract class Service
      */
     public function disposeModel(Model $model): void
     {
-        $this->checkType($model);
         try {
+            $this->checkType($model);
             $model->delete();
         } catch (\PDOException $exception) {
-            $code = $exception->getCode();
-            throw new ModelException("$code: Error when deleting a model.");
+            throw new ModelException(
+                'Error when deleting a model.',
+                (int)$exception->getCode(),
+                $exception
+            );
         }
     }
 
     final public function getTable(): TypedSelection
     {
         return new TypedSelection(
-            $this->getModelClassName(),
-            $this->tableName,
+            $this->mapper,
             $this->explorer,
-            $this->explorer->getConventions()
+            $this->explorer->getConventions(),
+            $this->tableName
         );
     }
 
     public function storeModel(array $data, ?Model $model = null): Model
     {
-        if (isset($model)) {
-            $this->updateModel($model, $data);
-            return $model;
+        try {
+            $dataSet = $this->filterData($data);
+            if (isset($model)) {
+                $this->checkType($model);
+                $model->update($dataSet);
+                return $model;
+            }
+            return $this->getTable()->insert($dataSet);
+        } catch (\PDOException $exception) {
+            throw new ModelException('Error when storing model.', (int)$exception->getCode(), $exception);
         }
-        return $this->createNewModel($data);
     }
 
     /** @return string|Model */
     final public function getModelClassName(): string
     {
-        return $this->modelClassName;
+        return $this->mapper->getDefinition($this->tableName)['model'];
     }
 
     /**
@@ -122,9 +84,7 @@ abstract class Service
     {
         $modelClassName = $this->getModelClassName();
         if (!$model instanceof $modelClassName) {
-            throw new \InvalidArgumentException(
-                'Service for class ' . $this->getModelClassName() . ' cannot store ' . get_class($model)
-            );
+            throw new ModelException('Service for class ' . $modelClassName . ' cannot store ' . get_class($model));
         }
     }
 
@@ -137,7 +97,11 @@ abstract class Service
         foreach ($this->getColumnMetadata() as $column) {
             $name = $column['name'];
             if (array_key_exists($name, $data)) {
-                $result[$name] = $data[$name];
+                if ($data[$name] instanceof \BackedEnum) {
+                    $result[$name] = $data[$name]->value;
+                } else {
+                    $result[$name] = $data[$name];
+                }
             }
         }
         return $result;

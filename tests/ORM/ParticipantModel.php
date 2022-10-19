@@ -6,10 +6,9 @@ namespace Fykosak\NetteORM\Tests\ORM;
 
 use Fykosak\NetteORM\Model;
 
+/**
+ * @property-read EventModel $event
+ */
 class ParticipantModel extends Model
 {
-    public function getEvent(): EventModel
-    {
-        return EventModel::createFromActiveRow($this->event);
-    }
 }
