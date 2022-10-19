@@ -36,12 +36,16 @@ abstract class Model extends ActiveRow
         $docs = ModelRelationsParser::parseModelDoc($selfReflection);
         if (!is_null($value) && isset($docs[$key])) {
             $item = $docs[$key];
-            if ($value instanceof ActiveRow && $item['type']->isClass()) {
+            if ($item['type']->isClass()) {
                 $returnType = new \ReflectionClass(
                     Reflection::expandClassName($item['type']->getSingleName(), $selfReflection)
                 );
-                if ($returnType->isSubclassOf(self::class)) {
-                    $value = $returnType->newInstance($value->toArray(), $value->getTable());
+                if ($value instanceof ActiveRow) {
+                    if ($returnType->isSubclassOf(self::class)) {
+                        $value = $returnType->newInstance($value->toArray(), $value->getTable());
+                    }
+                } elseif ($returnType->isSubclassOf(\BackedEnum::class)) {
+                    $value = $returnType->getMethod('tryFrom')->invoke($returnType, $value);
                 }
             }
         }
