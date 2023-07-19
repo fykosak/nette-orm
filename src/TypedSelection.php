@@ -23,10 +23,4 @@ class TypedSelection extends Selection
         parent::__construct($explorer, $conventions, $tableName, $cacheStorage);
         $this->mapper = $mapper;
     }
-
-    protected function createRow(array $row): Model
-    {
-        $className = $this->mapper->getDefinition($this->name)['model'];
-        return new $className($row, $this);
-    }
 }

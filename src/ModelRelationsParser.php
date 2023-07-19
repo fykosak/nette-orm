@@ -12,6 +12,8 @@ class ModelRelationsParser
     /**
      * @param \ReflectionClass $modelReflection
      * @return Type[][]|string[][]|null
+     * @phpstan-return array<string,array{'type':\Nette\Utils\Type,'reflection':?\ReflectionClass,'property':string}>
+     * @throws \ReflectionException
      */
     public static function parseModelDoc(\ReflectionClass $modelReflection): ?array
     {
@@ -23,7 +25,7 @@ class ModelRelationsParser
         foreach (explode("\n", $doc) as $line) {
             if (
                 preg_match(
-                    '/\*\s+@property-read\s+([A-Za-z0-9_>|]+)\s+\$?([A-Za-z0-9_]+)/',
+                    '/\*\s+@property-read\s+([A-Za-z0-9_>|]+)\s+\$([A-Za-z0-9_]+)/',
                     $line,
                     $matches
                 )
@@ -32,6 +34,11 @@ class ModelRelationsParser
                 $returnType = Type::fromString($returnString);
                 $properties[$property] = [
                     'type' => $returnType,
+                    'reflection' => $returnType->isClass()
+                        ? new \ReflectionClass(
+                            Reflection::expandClassName($returnType->getSingleName(), $modelReflection)
+                        )
+                        : null,
                     'property' => $property,
                 ];
             }
@@ -47,6 +54,7 @@ class ModelRelationsParser
         $items = [];
         foreach ($model->getMethods() as $method) {
             $name = $method->getName();
+            /** @var \ReflectionNamedType|null $returnType */
             $returnType = $method->getReturnType();
             if (
                 !$returnType

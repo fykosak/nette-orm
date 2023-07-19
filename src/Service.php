@@ -8,6 +8,9 @@ use Fykosak\NetteORM\Exceptions\ModelException;
 use Nette\Database\Explorer;
 use Nette\SmartObject;
 
+/**
+ * @phpstan-template M of Model
+ */
 abstract class Service
 {
     use SmartObject;
@@ -26,7 +29,7 @@ abstract class Service
 
     /**
      * @param mixed $key
-     * @return Model|null
+     * @phpstan-return M|null
      */
     public function findByPrimary($key): ?Model
     {
@@ -35,6 +38,7 @@ abstract class Service
 
     /**
      * @throws ModelException
+     * @phpstan-param M $model
      */
     public function disposeModel(Model $model): void
     {
@@ -50,6 +54,9 @@ abstract class Service
         }
     }
 
+    /**
+     * @phpstan-return TypedSelection<M>
+     */
     final public function getTable(): TypedSelection
     {
         return new TypedSelection(
@@ -60,6 +67,10 @@ abstract class Service
         );
     }
 
+    /**
+     * @phpstan-param M|null $model
+     * @phpstan-return M
+     */
     public function storeModel(array $data, ?Model $model = null): Model
     {
         try {
@@ -75,7 +86,7 @@ abstract class Service
         }
     }
 
-    /** @return string|Model */
+    /** @phpstan-return class-string<M> */
     final public function getModelClassName(): string
     {
         return $this->mapper->getDefinition($this->tableName)['model'];
@@ -83,6 +94,7 @@ abstract class Service
 
     /**
      * @throws \InvalidArgumentException
+     * @phpstan-param M $model
      */
     protected function checkType(Model $model): void
     {

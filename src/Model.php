@@ -8,7 +8,6 @@ use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
 use Nette\MemberAccessException;
-use Nette\Utils\Reflection;
 
 /**
  * @method TypedGroupedSelection related(string $key, ?string $throughColumn = null)
@@ -16,7 +15,7 @@ use Nette\Utils\Reflection;
 abstract class Model extends ActiveRow
 {
 
-    public function __construct(array $data, Selection $table)
+    final public function __construct(array $data, Selection $table)
     {
         if (!$table instanceof TypedGroupedSelection && !$table instanceof TypedSelection) {
             throw new \InvalidArgumentException(
@@ -38,9 +37,8 @@ abstract class Model extends ActiveRow
         if (!is_null($value) && isset($docs[$key])) {
             $item = $docs[$key];
             if ($value instanceof ActiveRow && $item['type']->isClass()) {
-                $returnType = new \ReflectionClass(
-                    Reflection::expandClassName($item['type']->getSingleName(), $selfReflection)
-                );
+                /** @var \ReflectionClass $returnType */
+                $returnType = $item['reflection'];
                 if ($returnType->isSubclassOf(self::class)) {
                     $value = $returnType->newInstance($value->toArray(), $value->getTable());
                 }
@@ -50,12 +48,12 @@ abstract class Model extends ActiveRow
     }
 
     /**
-     * @template T
-     * @param class-string<T>|string $requestedModel
-     * @return ?T
+     * @phpstan-template T of Model
+     * @phpstan-param class-string<T> $requestedModel
+     * @phpstan-return ?T
      * @throws CannotAccessModelException|\ReflectionException
      */
-    public function getReferencedModel(string $requestedModel): ?Model
+    public function getReferencedModel(string $requestedModel): ?self
     {
         // model is already instance of desired model
         if ($this instanceof $requestedModel) {

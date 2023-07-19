@@ -10,6 +10,9 @@ class Mapper
 {
     use SmartObject;
 
+    /**
+     * @phpstan-var array<string,array{'model':class-string<Model>,'service':class-string<Service>}>
+     */
     private array $map = [];
 
     /**

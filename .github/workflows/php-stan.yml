@@ -1,0 +1,29 @@
+name: PHPStan
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }} with ${{ matrix.database }}
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '7.4' , '8.0' , '8.1' ]
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout
+        with:
+          submodules: recursive
+      - uses: shivammathur/setup-php@v2
+        name: Setup PHP
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, mbstring, mysql, soap, xml
+          tools: composer
+          ini-values: session.gc_probability=0, date.timezone="Europe/Prague", display_startup_errors = Off
+      - name: Composer install
+        run: composer install --no-progress --prefer-dist
+      - uses: php-actions/phpstan@v3
+        with:
+          path: src/ tests/
