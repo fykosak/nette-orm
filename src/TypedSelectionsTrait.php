@@ -4,13 +4,8 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM;
 
-use Fykosak\NetteORM\Tests\ORM\EventModel;
-
 /**
- * @phpstan-template M of Model
- * @phpstan-method M|null fetch()
- * @phpstan-method M|null get($key)
- * @phpstan-method M insert(iterable $data)
+ * @template M of Model
  */
 trait TypedSelectionsTrait
 {

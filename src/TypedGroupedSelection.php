@@ -10,8 +10,12 @@ use Nette\Database\Explorer;
 use Nette\Database\Table\GroupedSelection;
 use Nette\Database\Table\Selection;
 
+/**
+ * @template M of Model
+ */
 class TypedGroupedSelection extends GroupedSelection
 {
+    /** @phpstan-use TypedSelectionsTrait<M> */
     use TypedSelectionsTrait;
 
     public function __construct(

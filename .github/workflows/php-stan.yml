@@ -26,4 +26,5 @@ jobs:
         run: composer install --no-progress --prefer-dist
       - uses: php-actions/phpstan@v3
         with:
+          level: 6
           path: src/ tests/

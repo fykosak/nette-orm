@@ -9,12 +9,11 @@ use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
 use Nette\MemberAccessException;
 
-/**
- * @method TypedGroupedSelection related(string $key, ?string $throughColumn = null)
- */
 abstract class Model extends ActiveRow
 {
-
+    /**
+     * @phpstan-param array<string,mixed> $data
+     */
     final public function __construct(array $data, Selection $table)
     {
         if (!$table instanceof TypedGroupedSelection && !$table instanceof TypedSelection) {
@@ -26,7 +25,7 @@ abstract class Model extends ActiveRow
     }
 
     /**
-     * @return ActiveRow|mixed
+     * @return Model|mixed
      * @throws MemberAccessException|\ReflectionException
      */
     public function &__get(string $key)
@@ -37,7 +36,7 @@ abstract class Model extends ActiveRow
         if (!is_null($value) && isset($docs[$key])) {
             $item = $docs[$key];
             if ($value instanceof ActiveRow && $item['type']->isClass()) {
-                /** @var \ReflectionClass $returnType */
+                /** @var \ReflectionClass<object> $returnType */
                 $returnType = $item['reflection'];
                 if ($returnType->isSubclassOf(self::class)) {
                     $value = $returnType->newInstance($value->toArray(), $value->getTable());
@@ -48,9 +47,9 @@ abstract class Model extends ActiveRow
     }
 
     /**
-     * @phpstan-template T of Model
-     * @phpstan-param class-string<T> $requestedModel
-     * @phpstan-return ?T
+     * @template M of Model
+     * @phpstan-param class-string<M> $requestedModel
+     * @phpstan-return ?M
      * @throws CannotAccessModelException|\ReflectionException
      */
     public function getReferencedModel(string $requestedModel): ?self

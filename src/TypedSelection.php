@@ -9,8 +9,12 @@ use Nette\Database\Conventions;
 use Nette\Database\Explorer;
 use Nette\Database\Table\Selection;
 
+/**
+ * @template M of Model
+ */
 class TypedSelection extends Selection
 {
+    /** @phpstan-use TypedSelectionsTrait<M> */
     use TypedSelectionsTrait;
 
     public function __construct(

@@ -11,7 +11,7 @@ class Mapper
     use SmartObject;
 
     /**
-     * @phpstan-var array<string,array{'model':class-string<Model>,'service':class-string<Service>}>
+     * @phpstan-var array<string,array{'model':class-string<Model>,'service':class-string<Service<Model>>}>
      */
     private array $map = [];
 
@@ -26,6 +26,9 @@ class Mapper
         $this->map[$table] = ['model' => $model, 'service' => $service];
     }
 
+    /**
+     * @phpstan-return array{'model':class-string<Model>,'service':class-string<Service<Model>>}
+     */
     public function getDefinition(string $table): ?array
     {
         return $this->map[$table] ?? null;

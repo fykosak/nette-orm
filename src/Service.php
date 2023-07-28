@@ -9,7 +9,7 @@ use Nette\Database\Explorer;
 use Nette\SmartObject;
 
 /**
- * @phpstan-template M of Model
+ * @template M of Model
  */
 abstract class Service
 {
@@ -18,6 +18,7 @@ abstract class Service
     private string $tableName;
     public Explorer $explorer;
     private Mapper $mapper;
+    /** @phpstan-var array<string,mixed> */
     private array $columns;
 
     final public function __construct(string $tableName, Explorer $explorer, Mapper $mapper)
@@ -28,7 +29,7 @@ abstract class Service
     }
 
     /**
-     * @param mixed $key
+     * @param string|int|null $key
      * @phpstan-return M|null
      */
     public function findByPrimary($key): ?Model
@@ -59,16 +60,19 @@ abstract class Service
      */
     final public function getTable(): TypedSelection
     {
-        return new TypedSelection(
+        /** @phpstan-var TypedSelection<M> $selection */
+        $selection = new TypedSelection(
             $this->mapper,
             $this->explorer,
             $this->explorer->getConventions(),
             $this->tableName
         );
+        return $selection;
     }
 
     /**
      * @phpstan-param M|null $model
+     * @phpstan-param array<string,mixed> $data
      * @phpstan-return M
      */
     public function storeModel(array $data, ?Model $model = null): Model
@@ -104,8 +108,10 @@ abstract class Service
         }
     }
 
-    /*
+    /**
      * Omits array elements whose keys aren't columns in the table.
+     * @phpstan-param array<string,mixed> $data
+     * @phpstan-return array<string,mixed>
      */
     protected function filterData(array $data): array
     {
@@ -119,6 +125,9 @@ abstract class Service
         return $result;
     }
 
+    /**
+     * @phpstan-return array<string,mixed>
+     */
     protected function getColumnMetadata(): array
     {
         if (!isset($this->columns)) {
