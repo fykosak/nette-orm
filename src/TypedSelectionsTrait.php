@@ -6,6 +6,7 @@ namespace Fykosak\NetteORM;
 
 /**
  * @template M of Model
+ * @phpstan-implements \Iterator<M>
  */
 trait TypedSelectionsTrait
 {
