@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Fykosak\NetteORM\Tests\Tests;
 
 use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
-use Fykosak\NetteORM\ReferencedAccessor;
 use Fykosak\NetteORM\Tests\ORM\EventModel;
-use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
 use Fykosak\NetteORM\Tests\ORM\EventService;
+use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
 use Fykosak\NetteORM\Tests\ORM\ParticipantService;
 use Tester\Assert;
 
@@ -16,13 +15,13 @@ require_once __DIR__ . '/TestCase.php';
 
 class ReferencedAccessTest extends TestCase
 {
-
     public function testSuccess(): void
     {
         /** @var ParticipantService $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ParticipantService::class);
+        /** @var ParticipantModel $participant */
         $participant = $serviceParticipant->getTable()->fetch();
-        $modelEvent = ReferencedAccessor::accessModel($participant, EventModel::class);
+        $modelEvent = $participant->getReferencedModel(EventModel::class);
         Assert::type(EventModel::class, $modelEvent);
     }
 
@@ -30,8 +29,9 @@ class ReferencedAccessTest extends TestCase
     {
         /** @var ParticipantService $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ParticipantService::class);
+        /** @var ParticipantModel $participant */
         $participant = $serviceParticipant->getTable()->fetch();
-        $newModel = ReferencedAccessor::accessModel($participant, ParticipantModel::class);
+        $newModel = $participant->getReferencedModel(ParticipantModel::class);
         Assert::same($participant, $newModel);
     }
 
@@ -39,9 +39,10 @@ class ReferencedAccessTest extends TestCase
     {
         /** @var EventService $service */
         $service = $this->container->getByType(EventService::class);
+        /** @var EventModel $event */
         $event = $service->getTable()->fetch();
         Assert::exception(function () use ($event) {
-            ReferencedAccessor::accessModel($event, ParticipantModel::class);
+            $event->getReferencedModel(ParticipantModel::class);
         }, CannotAccessModelException::class);
     }
 }

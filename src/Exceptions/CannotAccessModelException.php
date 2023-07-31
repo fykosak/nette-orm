@@ -9,7 +9,6 @@ use Throwable;
 
 class CannotAccessModelException extends RuntimeException
 {
-
     public function __construct(string $modelClassName, object $model, int $code = 0, ?Throwable $previous = null)
     {
         parent::__construct(

@@ -1,15 +1,15 @@
-name: PSR12 (PHP codesniffer)
+name: PHPStan
 
-on: [ push, pull_request ]
+on: [push, pull_request]
 
 jobs:
   test:
-    name: deafult with ${{ matrix.php }}
+    name: PHP ${{ matrix.php }} with ${{ matrix.database }}
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
-        php: [ '8.1']
+        php: [ '7.4' , '8.0' , '8.1' ]
     steps:
       - uses: actions/checkout@v2
         name: Checkout
@@ -24,11 +24,7 @@ jobs:
           ini-values: session.gc_probability=0, date.timezone="Europe/Prague", display_startup_errors = Off
       - name: Composer install
         run: composer install --no-progress --prefer-dist
-      - run: composer run-script testPSR
-        name: Test
-      - if: failure()
-        name: Failure output
-        uses: actions/upload-artifact@v2
+      - uses: php-actions/phpstan@v3
         with:
-          name: output
-          path: tests/**/*.actual
+          level: 6
+          path: src/ tests/

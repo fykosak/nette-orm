@@ -7,12 +7,13 @@ namespace Fykosak\NetteORM;
 use Nette\Caching\IStorage;
 use Nette\Database\Conventions;
 use Nette\Database\Explorer;
+use Nette\Database\Table\GroupedSelection;
 use Nette\Database\Table\Selection;
 
 /**
  * @template M of Model
  */
-class TypedSelection extends Selection
+class TypedGroupedSelection extends GroupedSelection
 {
     /** @phpstan-use TypedSelectionsTrait<M> */
     use TypedSelectionsTrait;
@@ -22,9 +23,11 @@ class TypedSelection extends Selection
         Explorer $explorer,
         Conventions $conventions,
         string $tableName,
+        string $column,
+        Selection $refTable,
         ?IStorage $cacheStorage = null
     ) {
-        parent::__construct($explorer, $conventions, $tableName, $cacheStorage);
+        parent::__construct($explorer, $conventions, $tableName, $column, $refTable, $cacheStorage);
         $this->mapper = $mapper;
     }
 }

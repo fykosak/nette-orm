@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Fykosak\NetteORM\Tests\Tests;
 
 use Fykosak\NetteORM\Exceptions\ModelException;
-use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
 use Fykosak\NetteORM\Tests\ORM\EventService;
+use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
 use Fykosak\NetteORM\Tests\ORM\ParticipantService;
 use Tester\Assert;
 
@@ -21,7 +21,7 @@ class ServiceOperationTest extends TestCase
         $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $countBefore = $serviceParticipant->getTable()->count('*');
 
-        $newEvent = $serviceParticipant->createNewModel(['event_id' => 1, 'name' => 'Igor']);
+        $newEvent = $serviceParticipant->storeModel(['event_id' => 1, 'name' => 'Igor']);
         $countAfter = $serviceParticipant->getTable()->count('*');
 
         Assert::same($countBefore + 1, $countAfter);
@@ -35,7 +35,7 @@ class ServiceOperationTest extends TestCase
         $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $countBefore = $serviceParticipant->getTable()->count('*');
         Assert::exception(function () use ($serviceParticipant) {
-            $serviceParticipant->createNewModel(['event_id' => 4, 'name' => 'Igor']);
+            $serviceParticipant->storeModel(['event_id' => 4, 'name' => 'Igor']);
         }, ModelException::class);
 
         $countAfter = $serviceParticipant->getTable()->count('*');
@@ -70,7 +70,7 @@ class ServiceOperationTest extends TestCase
         /** @var ParticipantService $serviceParticipant */
         $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $participant = $serviceParticipant->findByPrimary(2);
-        $serviceParticipant->updateModel($participant, ['name' => 'Betka']);
+        $serviceParticipant->storeModel(['name' => 'Betka'], $participant);
         Assert::same('Betka', $participant->name);
         Assert::type(ParticipantModel::class, $participant);
     }
@@ -82,7 +82,7 @@ class ServiceOperationTest extends TestCase
         $participant = $serviceParticipant->findByPrimary(2);
 
         Assert::exception(function () use ($participant, $serviceParticipant) {
-            $serviceParticipant->updateModel($participant, ['event_id' => 4]);
+            $serviceParticipant->storeModel(['event_id' => 4], $participant);
         }, ModelException::class);
         Assert::same('Bára', $participant->name);
     }
@@ -125,7 +125,7 @@ class ServiceOperationTest extends TestCase
         $event = $serviceEvent->getTable()->fetch();
         Assert::exception(function () use ($event, $serviceParticipant) {
             $serviceParticipant->disposeModel($event);
-        }, \InvalidArgumentException::class);
+        }, ModelException::class);
     }
 
     public function testDeleteError(): void
