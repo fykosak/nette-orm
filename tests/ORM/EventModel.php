@@ -6,6 +6,9 @@ namespace Fykosak\NetteORM\Tests\ORM;
 
 use Fykosak\NetteORM\Model;
 
+/**
+ *
+ */
 class EventModel extends Model
 {
 }

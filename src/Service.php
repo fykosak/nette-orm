@@ -29,10 +29,9 @@ abstract class Service
     }
 
     /**
-     * @param string|int|null $key
      * @phpstan-return M|null
      */
-    public function findByPrimary($key): ?Model
+    public function findByPrimary(int|string|null $key): ?Model
     {
         return isset($key) ? $this->getTable()->get($key) : null;
     }
@@ -119,7 +118,11 @@ abstract class Service
         foreach ($this->getColumnMetadata() as $column) {
             $name = $column['name'];
             if (array_key_exists($name, $data)) {
-                $result[$name] = $data[$name];
+                if ($data[$name] instanceof \BackedEnum) {
+                    $result[$name] = $data[$name]->value;
+                } else {
+                    $result[$name] = $data[$name];
+                }
             }
         }
         return $result;

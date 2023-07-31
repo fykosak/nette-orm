@@ -6,8 +6,8 @@ namespace Fykosak\NetteORM\Tests\Tests;
 
 use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
 use Fykosak\NetteORM\Tests\ORM\EventModel;
-use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
 use Fykosak\NetteORM\Tests\ORM\EventService;
+use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
 use Fykosak\NetteORM\Tests\ORM\ParticipantService;
 use Tester\Assert;
 
@@ -15,7 +15,6 @@ require_once __DIR__ . '/TestCase.php';
 
 class ReferencedAccessTest extends TestCase
 {
-
     public function testSuccess(): void
     {
         /** @var ParticipantService $serviceParticipant */
