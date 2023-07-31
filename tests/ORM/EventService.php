@@ -6,6 +6,9 @@ namespace Fykosak\NetteORM\Tests\ORM;
 
 use Fykosak\NetteORM\Service;
 
+/**
+ * @phpstan-extends Service<EventModel>
+ */
 class EventService extends Service
 {
 }
