@@ -30,8 +30,9 @@ abstract class Service
 
     /**
      * @phpstan-return M|null
+     * @param string|int|null $key
      */
-    public function findByPrimary(int|string|null $key): ?Model
+    public function findByPrimary($key): ?Model
     {
         return isset($key) ? $this->getTable()->get($key) : null;
     }

@@ -7,8 +7,7 @@ namespace Fykosak\NetteORM\Tests\ORM;
 use Fykosak\NetteORM\Model;
 
 /**
- * @property-read EventModel event
- * @property-read ParticipantStatus status
+ * @property-read EventModel $event
  */
 class ParticipantModel extends Model
 {
