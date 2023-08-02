@@ -118,11 +118,11 @@ abstract class Service
         foreach ($this->getColumnMetadata() as $column) {
             $name = $column['name'];
             if (array_key_exists($name, $data)) {
-                if ($data[$name] instanceof \BackedEnum) {
+               /* if ($data[$name] instanceof \BackedEnum) {
                     $result[$name] = $data[$name]->value;
-                } else {
+                } else {*/
                     $result[$name] = $data[$name];
-                }
+                // }
             }
         }
         return $result;
