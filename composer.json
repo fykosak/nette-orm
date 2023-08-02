@@ -50,7 +50,7 @@
       "vendor/bin/tester tests -p php --coverage coverage.html --coverage-src src/ -s -c tests/php.ini -j 1"
     ],
     "testPHPStan": [
-      "vendor/bin/phpstan analyse --level 6 src/"
+      "vendor/bin/phpstan analyse --level 6 src/ tests/"
     ]
   }
 }
