@@ -23,7 +23,12 @@ class Extension extends CompilerExtension
     }
 
     /**
-     * @phpstan-param array<string,array{'service':class-string<Service<Model>>,'model':class-string<Model>,'context':mixed}> $fieldDefinitions
+     * @template M of Model
+     * @phpstan-param array<string,array{
+     *     'service':class-string<Service<M>>,
+     *     'model':class-string<M>,
+     *     'context':mixed
+     * }> $fieldDefinitions
      */
     final protected function registerORMService(
         string $tableName,

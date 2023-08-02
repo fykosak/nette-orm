@@ -6,12 +6,14 @@ namespace Fykosak\NetteORM;
 
 /**
  * @template M of Model
- * @phpstan-implements \Iterator<M>
  */
 trait TypedSelectionsTrait
 {
     protected Mapper $mapper;
 
+    /**
+     * @phpstan-return TypedGroupedSelection<Model>
+     */
     protected function createGroupedSelectionInstance(string $table, string $column): TypedGroupedSelection
     {
         return new TypedGroupedSelection(
@@ -24,6 +26,9 @@ trait TypedSelectionsTrait
         );
     }
 
+    /**
+     * @phpstan-return TypedSelection<Model>
+     */
     public function createSelectionInstance(?string $table = null): TypedSelection
     {
         return new TypedSelection(
@@ -36,6 +41,7 @@ trait TypedSelectionsTrait
 
     /**
      * @phpstan-return M
+     * @phpstan-param array<string,mixed> $row
      */
     protected function createRow(array $row): Model
     {

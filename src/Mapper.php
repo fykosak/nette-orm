@@ -6,17 +6,26 @@ namespace Fykosak\NetteORM;
 
 use Nette\SmartObject;
 
+/**
+ * @phpstan-type MapperItem array{
+ *     'model':class-string<Model>,
+ *     'service':class-string<Service<Model>>
+ *     }
+ */
 class Mapper
 {
     use SmartObject;
 
     /**
-     * @phpstan-var array<string,array{'model':class-string<Model>,'service':class-string<Service<Model>>}>
+     * @phpstan-var array<string,MapperItem>
      */
     private array $map = [];
 
     /**
+     * @template M of Model
      * @throws \Exception
+     * @phpstan-param class-string<M> $model
+     * @phpstan-param class-string<Service<M>> $service
      */
     public function addDefinition(string $table, string $model, string $service): void
     {
@@ -27,7 +36,7 @@ class Mapper
     }
 
     /**
-     * @phpstan-return array{'model':class-string<Model>,'service':class-string<Service<Model>>}
+     * @phpstan-return MapperItem
      */
     public function getDefinition(string $table): ?array
     {

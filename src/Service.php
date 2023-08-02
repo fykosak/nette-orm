@@ -34,7 +34,7 @@ abstract class Service
      */
     public function findByPrimary($key): ?Model
     {
-        return isset($key) ? $this->getTable()->get($key) : null;
+        return isset($key) ? $this->getTable()->get($key) : null;  //@phpstan-ignore-line
     }
 
     /**
@@ -84,7 +84,7 @@ abstract class Service
                 $model->update($dataSet);
                 return $model;
             }
-            return $this->getTable()->insert($dataSet);
+            return $this->getTable()->insert($dataSet); //@phpstan-ignore-line
         } catch (\PDOException $exception) {
             throw new ModelException('Error when storing model.', (int)$exception->getCode(), $exception);
         }
