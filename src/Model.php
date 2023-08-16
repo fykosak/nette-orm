@@ -25,6 +25,18 @@ abstract class Model extends ActiveRow
     }
 
     /**
+     * @phpstan-return TypedGroupedSelection<Model>
+     */
+    public function related(string $key, ?string $throughColumn = null): TypedGroupedSelection
+    {
+        $selection = parent::related($key, $throughColumn);
+        if ($selection instanceof TypedGroupedSelection) {
+            return $selection;
+        }
+        throw new \InvalidArgumentException();
+    }
+
+    /**
      * @return Model|mixed
      * @throws MemberAccessException|\ReflectionException
      */
