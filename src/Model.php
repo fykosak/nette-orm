@@ -50,9 +50,9 @@ abstract class Model extends ActiveRow
     }
 
     /**
-     * @template M of Model
-     * @phpstan-param class-string<M> $requestedModel
-     * @phpstan-return ?M
+     * @template TModel of Model
+     * @phpstan-param class-string<TModel> $requestedModel
+     * @phpstan-return TModel|null
      * @throws CannotAccessModelException|\ReflectionException
      */
     public function getReferencedModel(string $requestedModel): ?self

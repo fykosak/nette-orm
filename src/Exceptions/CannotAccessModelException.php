@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM\Exceptions;
 
+use Fykosak\NetteORM\Model;
 use RuntimeException;
 use Throwable;
 
 class CannotAccessModelException extends RuntimeException
 {
-    public function __construct(string $modelClassName, object $model, int $code = 0, ?Throwable $previous = null)
+    /**
+     * @phpstan-param class-string<Model> $modelClassName
+     * @phpstan-param Model $model
+     */
+    public function __construct(string $modelClassName, Model $model, int $code = 0, ?Throwable $previous = null)
     {
         parent::__construct(
             sprintf(

@@ -11,7 +11,7 @@ class ModelRelationsParser
 {
     /**
      * @phpstan-param \ReflectionClass<Model> $modelReflection
-     * @phpstan-return array<string,array{'type':Type,'reflection':?\ReflectionClass<Model>,'property':string}>
+     * @phpstan-return array<string,array{type:Type,reflection:\ReflectionClass<Model>|null,property:string}>
      * @throws \ReflectionException
      */
     public static function parseModelDoc(\ReflectionClass $modelReflection): ?array
@@ -48,7 +48,7 @@ class ModelRelationsParser
     /**
      * @throws \ReflectionException
      * @phpstan-param \ReflectionClass<Model> $model
-     * @phpstan-return array<string,array{'type':'method','accessor':string,'reflection':\ReflectionClass<Model>,'nullable':bool}>
+     * @phpstan-return array<string,array{type:string,accessor:string,reflection:\ReflectionClass<Model>,nullable:bool}>
      */
     public static function resolveReferencedMethods(\ReflectionClass $model): array
     {
@@ -87,7 +87,12 @@ class ModelRelationsParser
     /**
      * @throws \ReflectionException
      * @phpstan-param \ReflectionClass<Model> $model
-     * @phpstan-return array<string,array{'type':'property','accessor':string,'reflection':\ReflectionClass<Model>,'nullable':bool}>
+     * @phpstan-return array<string,array{
+     *     type:string,
+     *     accessor:string,
+     *     reflection:\ReflectionClass<Model>,
+     *     nullable:bool,
+     *     }>
      */
     public static function resolveReferencedProperties(\ReflectionClass $model): array
     {
@@ -117,12 +122,16 @@ class ModelRelationsParser
     }
 
     /**
-     * @return \ReflectionClass[][]|null|string[][]
      * @throws \ReflectionException
      * @phpstan-param \ReflectionClass<Model> $model
      * @phpstan-param \ReflectionClass<Model> $requestedModel
      * @phpstan-param array<int,mixed> $classPath
-     * @phpstan-return array<int,array{'type':'property'|'method','accessor':string,'reflection':\ReflectionClass<Model>,'nullable':bool}>
+     * @phpstan-return array<int,array{
+     *     type:string,
+     *     accessor:string,
+     *     reflection:\ReflectionClass<Model>,
+     *     nullable:bool,
+     * }>
      */
     public static function getPath(
         \ReflectionClass $model,

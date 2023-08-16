@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Fykosak\NetteORM;
 
 /**
- * @template M of Model
+ * @template TModel of Model
  */
 trait TypedSelectionsTrait
 {
@@ -40,7 +40,7 @@ trait TypedSelectionsTrait
     }
 
     /**
-     * @phpstan-return M
+     * @phpstan-return TModel
      * @phpstan-param array<string,mixed> $row
      */
     protected function createRow(array $row): Model

@@ -25,9 +25,9 @@ class Extension extends CompilerExtension
     /**
      * @template M of Model
      * @phpstan-param array<string,array{
-     *     'service':class-string<Service<M>>,
-     *     'model':class-string<M>,
-     *     'context':mixed
+     *     service:class-string<Service<M>>,
+     *     model:class-string<M>,
+     *     context:mixed
      * }> $fieldDefinitions
      */
     final protected function registerORMService(

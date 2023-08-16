@@ -9,7 +9,7 @@ use Nette\Database\Explorer;
 use Nette\SmartObject;
 
 /**
- * @template M of Model
+ * @template TModel of Model
  */
 abstract class Service
 {
@@ -29,7 +29,7 @@ abstract class Service
     }
 
     /**
-     * @phpstan-return M|null
+     * @phpstan-return TModel|null
      * @param string|int|null $key
      */
     public function findByPrimary($key): ?Model
@@ -39,7 +39,7 @@ abstract class Service
 
     /**
      * @throws ModelException
-     * @phpstan-param M $model
+     * @phpstan-param TModel $model
      */
     public function disposeModel(Model $model): void
     {
@@ -56,11 +56,11 @@ abstract class Service
     }
 
     /**
-     * @phpstan-return TypedSelection<M>
+     * @phpstan-return TypedSelection<TModel>
      */
     final public function getTable(): TypedSelection
     {
-        /** @phpstan-var TypedSelection<M> $selection */
+        /** @phpstan-var TypedSelection<TModel> $selection */
         $selection = new TypedSelection(
             $this->mapper,
             $this->explorer,
@@ -71,9 +71,9 @@ abstract class Service
     }
 
     /**
-     * @phpstan-param M|null $model
+     * @phpstan-param TModel|null $model
      * @phpstan-param array<string,mixed> $data
-     * @phpstan-return M
+     * @phpstan-return TModel
      */
     public function storeModel(array $data, ?Model $model = null): Model
     {
@@ -90,7 +90,7 @@ abstract class Service
         }
     }
 
-    /** @phpstan-return class-string<M> */
+    /** @phpstan-return class-string<TModel> */
     final public function getModelClassName(): string
     {
         return $this->mapper->getDefinition($this->tableName)['model'];
@@ -98,7 +98,7 @@ abstract class Service
 
     /**
      * @throws \InvalidArgumentException
-     * @phpstan-param M $model
+     * @phpstan-param TModel $model
      */
     protected function checkType(Model $model): void
     {

@@ -11,11 +11,11 @@ use Nette\Database\Table\GroupedSelection;
 use Nette\Database\Table\Selection;
 
 /**
- * @template M of Model
+ * @template TModel of Model
  */
 class TypedGroupedSelection extends GroupedSelection
 {
-    /** @phpstan-use TypedSelectionsTrait<M> */
+    /** @phpstan-use TypedSelectionsTrait<TModel> */
     use TypedSelectionsTrait;
 
     public function __construct(

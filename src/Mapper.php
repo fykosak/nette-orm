@@ -8,8 +8,8 @@ use Nette\SmartObject;
 
 /**
  * @phpstan-type MapperItem array{
- *     'model':class-string<Model>,
- *     'service':class-string<Service<Model>>
+ *     model:class-string<Model>,
+ *     service:class-string<Service<Model>>
  *     }
  */
 class Mapper
