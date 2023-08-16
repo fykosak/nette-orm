@@ -33,7 +33,9 @@ abstract class Model extends ActiveRow
         if ($selection instanceof TypedGroupedSelection) {
             return $selection;
         }
-        throw new \InvalidArgumentException();
+        throw new \InvalidArgumentException(
+            'Selection must be a instance of TypedGroupedSelection'
+        );
     }
 
     /**
