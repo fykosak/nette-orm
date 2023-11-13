@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Fykosak\NetteORM;
+namespace Fykosak\NetteORM\Service;
+
+use Fykosak\NetteORM\Model\DummyModel;
+use Fykosak\NetteORM\Service\Service;
 
 /**
  * @phpstan-extends Service<DummyModel>

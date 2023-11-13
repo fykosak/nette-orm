@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Fykosak\NetteORM;
+namespace Fykosak\NetteORM\Service;
 
-use Fykosak\NetteORM\Exceptions\ModelException;
+use Fykosak\NetteORM\Mapper;
+use Fykosak\NetteORM\Model\Model;
+use Fykosak\NetteORM\Selection\TypedSelection;
 use Nette\Database\Explorer;
 use Nette\SmartObject;
 
@@ -38,21 +40,13 @@ abstract class Service
     }
 
     /**
-     * @throws ModelException
      * @phpstan-param TModel $model
+     * @throws \PDOException
      */
     public function disposeModel(Model $model): void
     {
-        try {
-            $this->checkType($model);
-            $model->delete();
-        } catch (\PDOException $exception) {
-            throw new ModelException(
-                'Error when deleting a model.',
-                (int)$exception->getCode(),
-                $exception
-            );
-        }
+        $this->checkType($model);
+        $model->delete();
     }
 
     /**
@@ -74,20 +68,17 @@ abstract class Service
      * @phpstan-param TModel|null $model
      * @phpstan-param array<string,mixed> $data
      * @phpstan-return TModel
+     * @throws \PDOException
      */
     public function storeModel(array $data, ?Model $model = null): Model
     {
-        try {
-            $dataSet = $this->filterData($data);
-            if (isset($model)) {
-                $this->checkType($model);
-                $model->update($dataSet);
-                return $model;
-            }
-            return $this->getTable()->insert($dataSet); //@phpstan-ignore-line
-        } catch (\PDOException $exception) {
-            throw new ModelException('Error when storing model.', (int)$exception->getCode(), $exception);
+        $dataSet = $this->filterData($data);
+        if (isset($model)) {
+            $this->checkType($model);
+            $model->update($dataSet);
+            return $model;
         }
+        return $this->getTable()->insert($dataSet); //@phpstan-ignore-line
     }
 
     /** @phpstan-return class-string<TModel> */
@@ -104,7 +95,7 @@ abstract class Service
     {
         $modelClassName = $this->getModelClassName();
         if (!$model instanceof $modelClassName) {
-            throw new ModelException('Service for class ' . $modelClassName . ' cannot store ' . get_class($model));
+            throw new \TypeError('Service for class ' . $modelClassName . ' cannot store ' . get_class($model));
         }
     }
 
@@ -119,10 +110,10 @@ abstract class Service
         foreach ($this->getColumnMetadata() as $column) {
             $name = $column['name'];
             if (array_key_exists($name, $data)) {
-               /* if ($data[$name] instanceof \BackedEnum) {
-                    $result[$name] = $data[$name]->value;
-                } else {*/
-                    $result[$name] = $data[$name];
+                /* if ($data[$name] instanceof \BackedEnum) {
+                     $result[$name] = $data[$name]->value;
+                 } else {*/
+                $result[$name] = $data[$name];
                 // }
             }
         }

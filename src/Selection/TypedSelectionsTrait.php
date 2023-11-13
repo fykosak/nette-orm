@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Fykosak\NetteORM;
+namespace Fykosak\NetteORM\Selection;
+
+use Fykosak\NetteORM\Mapper;
+use Fykosak\NetteORM\Model\Model;
 
 /**
  * @template TModel of Model

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM\Tests\Tests;
 
-use Fykosak\NetteORM\Exceptions\ModelException;
 use Fykosak\NetteORM\Tests\ORM\EventService;
 use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
 use Fykosak\NetteORM\Tests\ORM\ParticipantService;
+use Nette\Database\ForeignKeyConstraintViolationException;
 use Tester\Assert;
 
 require_once __DIR__ . '/TestCase.php';
@@ -36,7 +36,7 @@ class ServiceOperationTest extends TestCase
         $countBefore = $serviceParticipant->getTable()->count('*');
         Assert::exception(function () use ($serviceParticipant) {
             $serviceParticipant->storeModel(['event_id' => 4, 'name' => 'Igor']);
-        }, ModelException::class);
+        }, ForeignKeyConstraintViolationException::class);
 
         $countAfter = $serviceParticipant->getTable()->count('*');
 
@@ -83,7 +83,7 @@ class ServiceOperationTest extends TestCase
 
         Assert::exception(function () use ($participant, $serviceParticipant) {
             $serviceParticipant->storeModel(['event_id' => 4], $participant);
-        }, ModelException::class);
+        }, ForeignKeyConstraintViolationException::class);
         Assert::same('Bára', $participant->name);
     }
 
@@ -125,7 +125,7 @@ class ServiceOperationTest extends TestCase
         $event = $serviceEvent->getTable()->fetch();
         Assert::exception(function () use ($event, $serviceParticipant) {
             $serviceParticipant->disposeModel($event);
-        }, ModelException::class);
+        }, \TypeError::class);
     }
 
     public function testDeleteError(): void
@@ -134,7 +134,7 @@ class ServiceOperationTest extends TestCase
         $event = $serviceEvent->getTable()->fetch();
         Assert::exception(function () use ($event, $serviceEvent) {
             $serviceEvent->disposeModel($event);
-        }, ModelException::class);
+        }, ForeignKeyConstraintViolationException::class);
     }
 }
 

@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Fykosak\NetteORM;
+namespace Fykosak\NetteORM\Model;
 
 use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
+use Fykosak\NetteORM\ModelRelationsParser;
+use Fykosak\NetteORM\Selection\TypedGroupedSelection;
+use Fykosak\NetteORM\Selection\TypedSelection;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
 use Nette\MemberAccessException;
@@ -13,12 +16,13 @@ abstract class Model extends ActiveRow
 {
     /**
      * @phpstan-param array<string,mixed> $data
+     * @param TypedGroupedSelection|TypedSelection|Selection $table
      */
     final public function __construct(array $data, Selection $table)
     {
         if (!$table instanceof TypedGroupedSelection && !$table instanceof TypedSelection) {
-            throw new \InvalidArgumentException(
-                'Selection must be a instance of TypedSelection or TypedGroupedSelection'
+            throw new \TypeError(
+                '$selection must be a instance of TypedSelection or TypedGroupedSelection'
             );
         }
         parent::__construct($data, $table);
@@ -33,8 +37,8 @@ abstract class Model extends ActiveRow
         if ($selection instanceof TypedGroupedSelection) {
             return $selection;
         }
-        throw new \InvalidArgumentException(
-            'Selection must be a instance of TypedGroupedSelection'
+        throw new \TypeError(
+            '$selection must be a instance of TypedGroupedSelection'
         );
     }
 
