@@ -51,4 +51,9 @@ trait TypedSelectionsTrait
         $className = $this->mapper->getDefinition($this->name)['model'];
         return new $className($row, $this);
     }
+
+    public function unsetRefCache(): void
+    {
+        $this->refCache = [];
+    }
 }
