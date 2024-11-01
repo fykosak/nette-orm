@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fykosak\NetteORM;
 
 use Fykosak\NetteORM\Model\DummyModel;
+use Fykosak\NetteORM\Model\Model;
 use Fykosak\NetteORM\Service\DummyService;
 use Fykosak\NetteORM\Service\Service;
 use Nette\DI\CompilerExtension;
@@ -26,7 +27,7 @@ class Extension extends CompilerExtension
     }
 
     /**
-     * @template TModel of \Fykosak\NetteORM\Model\Model
+     * @template TModel of Model
      * @phpstan-param array<string,array{
      *     service:class-string<Service<TModel>>,
      *     model:class-string<TModel>,

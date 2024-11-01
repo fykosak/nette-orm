@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM;
 
+use Fykosak\NetteORM\Model\Model;
 use Fykosak\NetteORM\Service\Service;
 use Nette\SmartObject;
 
 /**
  * @phpstan-type MapperItem array{
- *     model:class-string<\Fykosak\NetteORM\Model\Model>,
- *     service:class-string<Service<\Fykosak\NetteORM\Model\Model>>
+ *     model:class-string<Model>,
+ *     service:class-string<Service<Model>>
  *     }
  */
 class Mapper
@@ -23,7 +24,7 @@ class Mapper
     private array $map = [];
 
     /**
-     * @template TModel of \Fykosak\NetteORM\Model\Model
+     * @template TModel of Model
      * @throws \Exception
      * @phpstan-param class-string<TModel> $model
      * @phpstan-param class-string<Service<TModel>> $service
