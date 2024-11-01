@@ -39,7 +39,7 @@ abstract class Model extends ActiveRow
     /**
      * @throws MemberAccessException|\ReflectionException
      */
-    public function &__get(string $key): mixed
+    public function &__get(string $key): mixed //phpcs:ignore
     {
         $value = parent::__get($key);
         $selfReflection = new \ReflectionClass(static::class);
@@ -47,7 +47,7 @@ abstract class Model extends ActiveRow
         if (!is_null($value) && isset($docs[$key])) {
             $item = $docs[$key];
             if ($item['type']->isClass()) {
-                $returnType =  $item['reflection'];
+                $returnType = $item['reflection'];
                 if ($value instanceof ActiveRow) {
                     if ($returnType->isSubclassOf(self::class)) {
                         $value = $returnType->newInstance($value->toArray(), $value->getTable());
