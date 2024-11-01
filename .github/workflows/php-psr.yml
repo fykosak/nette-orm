@@ -28,7 +28,7 @@ jobs:
         name: Test
       - if: failure()
         name: Failure output
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@vč
         with:
-          name: output
+          name: output ${{ matrix.php }} with ${{ matrix.database }}
           path: tests/**/*.actual
