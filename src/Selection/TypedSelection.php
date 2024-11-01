@@ -13,6 +13,7 @@ use Nette\Database\Table\Selection;
 
 /**
  * @template TModel of Model
+ * @phpstan-extends Selection<Model>
  */
 class TypedSelection extends Selection
 {

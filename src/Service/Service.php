@@ -14,7 +14,7 @@ use Nette\Database\Explorer;
  */
 abstract class Service
 {
-    /** @phpstan-var array<string,mixed> */
+    /** @phpstan-var array<int,array<string,mixed>> */
     private array $columns;
 
     final public function __construct(
@@ -29,7 +29,7 @@ abstract class Service
      */
     public function findByPrimary(string|int|null $key): ?Model
     {
-        return isset($key) ? $this->getTable()->get($key) : null;  //@phpstan-ignore-line
+        return isset($key) ? $this->getTable()->get($key) : null;
     }
 
     /**
@@ -71,7 +71,7 @@ abstract class Service
             $model->update($dataSet);
             return $model;
         }
-        return $this->getTable()->insert($dataSet); //@phpstan-ignore-line
+        return $this->getTable()->insert($dataSet);
     }
 
     /** @phpstan-return class-string<TModel> */
@@ -114,7 +114,7 @@ abstract class Service
     }
 
     /**
-     * @phpstan-return array<string,mixed>
+     * @phpstan-return array<int,array<string,mixed>>
      */
     protected function getColumnMetadata(): array
     {

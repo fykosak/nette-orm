@@ -15,6 +15,7 @@ abstract class Model extends ActiveRow
 {
     /**
      * @phpstan-param array<string,mixed> $data
+     * @phpstan-param TypedGroupedSelection<Model>|TypedSelection<Model> $table
      */
     final public function __construct(array $data, TypedGroupedSelection|TypedSelection $table)
     {

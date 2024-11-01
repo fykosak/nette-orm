@@ -20,6 +20,9 @@ class TypedGroupedSelection extends GroupedSelection
     /** @phpstan-use TypedSelectionsTrait<TModel> */
     use TypedSelectionsTrait;
 
+    /**
+     * @phpstan-param Selection<Model> $refTable
+     */
     public function __construct(
         Mapper $mapper,
         Explorer $explorer,
