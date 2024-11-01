@@ -8,35 +8,28 @@ use Fykosak\NetteORM\Mapper;
 use Fykosak\NetteORM\Model\Model;
 use Fykosak\NetteORM\Selection\TypedSelection;
 use Nette\Database\Explorer;
-use Nette\SmartObject;
 
 /**
  * @template TModel of Model
  */
 abstract class Service
 {
-    use SmartObject;
-
-    private string $tableName;
-    public Explorer $explorer;
-    private Mapper $mapper;
-    /** @phpstan-var array<string,mixed> */
+    /** @phpstan-var array<int,array<string,mixed>> */
     private array $columns;
 
-    final public function __construct(string $tableName, Explorer $explorer, Mapper $mapper)
-    {
-        $this->tableName = $tableName;
-        $this->explorer = $explorer;
-        $this->mapper = $mapper;
+    final public function __construct(
+        private readonly string $tableName,
+        public readonly Explorer $explorer,
+        private readonly Mapper $mapper
+    ) {
     }
 
     /**
      * @phpstan-return TModel|null
-     * @param string|int|null $key
      */
-    public function findByPrimary($key): ?Model
+    public function findByPrimary(string|int|null $key): ?Model
     {
-        return isset($key) ? $this->getTable()->get($key) : null;  //@phpstan-ignore-line
+        return isset($key) ? $this->getTable()->get($key) : null;
     }
 
     /**
@@ -78,7 +71,7 @@ abstract class Service
             $model->update($dataSet);
             return $model;
         }
-        return $this->getTable()->insert($dataSet); //@phpstan-ignore-line
+        return $this->getTable()->insert($dataSet);
     }
 
     /** @phpstan-return class-string<TModel> */
@@ -110,18 +103,18 @@ abstract class Service
         foreach ($this->getColumnMetadata() as $column) {
             $name = $column['name'];
             if (array_key_exists($name, $data)) {
-                /* if ($data[$name] instanceof \BackedEnum) {
+                if ($data[$name] instanceof \BackedEnum) {
                      $result[$name] = $data[$name]->value;
-                 } else {*/
-                $result[$name] = $data[$name];
-                // }
+                } else {
+                    $result[$name] = $data[$name];
+                }
             }
         }
         return $result;
     }
 
     /**
-     * @phpstan-return array<string,mixed>
+     * @phpstan-return array<int,array<string,mixed>>
      */
     protected function getColumnMetadata(): array
     {

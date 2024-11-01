@@ -9,22 +9,16 @@ use Fykosak\NetteORM\ModelRelationsParser;
 use Fykosak\NetteORM\Selection\TypedGroupedSelection;
 use Fykosak\NetteORM\Selection\TypedSelection;
 use Nette\Database\Table\ActiveRow;
-use Nette\Database\Table\Selection;
 use Nette\MemberAccessException;
 
 abstract class Model extends ActiveRow
 {
     /**
      * @phpstan-param array<string,mixed> $data
-     * @param TypedGroupedSelection|TypedSelection|Selection $table
+     * @phpstan-param TypedGroupedSelection<Model>|TypedSelection<Model> $table
      */
-    final public function __construct(array $data, Selection $table)
+    final public function __construct(array $data, TypedGroupedSelection|TypedSelection $table)
     {
-        if (!$table instanceof TypedGroupedSelection && !$table instanceof TypedSelection) {
-            throw new \TypeError(
-                '$selection must be a instance of TypedSelection or TypedGroupedSelection'
-            );
-        }
         parent::__construct($data, $table);
     }
 
@@ -43,10 +37,9 @@ abstract class Model extends ActiveRow
     }
 
     /**
-     * @return Model|mixed
      * @throws MemberAccessException|\ReflectionException
      */
-    public function &__get(string $key)
+    public function &__get(string $key): mixed //phpcs:ignore
     {
         $value = parent::__get($key);
         $selfReflection = new \ReflectionClass(static::class);
@@ -54,7 +47,7 @@ abstract class Model extends ActiveRow
         if (!is_null($value) && isset($docs[$key])) {
             $item = $docs[$key];
             if ($item['type']->isClass()) {
-                $returnType =  $item['reflection'];
+                $returnType = $item['reflection'];
                 if ($value instanceof ActiveRow) {
                     if ($returnType->isSubclassOf(self::class)) {
                         $value = $returnType->newInstance($value->toArray(), $value->getTable());

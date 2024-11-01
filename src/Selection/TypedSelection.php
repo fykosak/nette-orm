@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Fykosak\NetteORM\Selection;
 
 use Fykosak\NetteORM\Mapper;
+use Fykosak\NetteORM\Model\Model;
 use Nette\Caching\IStorage;
 use Nette\Database\Conventions;
 use Nette\Database\Explorer;
 use Nette\Database\Table\Selection;
 
 /**
- * @template TModel of \Fykosak\NetteORM\Model\Model
+ * @template TModel of Model
+ * @phpstan-extends Selection<Model>
  */
 class TypedSelection extends Selection
 {

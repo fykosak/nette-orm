@@ -1,5 +1,5 @@
 services:
-    - Nette\Caching\Storages\FileStorage('../temp')
+    - Nette\Caching\Storages\FileStorage(/tmp)
 orm:
     event:
         modelClassName: Fykosak\NetteORM\Tests\ORM\EventModel
