@@ -52,9 +52,9 @@ abstract class Model extends ActiveRow
                     if ($returnType->isSubclassOf(self::class)) {
                         $value = $returnType->newInstance($value->toArray(), $value->getTable());
                     }
-                }/* elseif ($returnType->isSubclassOf(\BackedEnum::class)) {
+                } elseif ($returnType->isSubclassOf(\BackedEnum::class)) {
                     $value = $returnType->getMethod('tryFrom')->invoke($returnType, $value);
-                }*/
+                }
             }
         }
         return $value;
@@ -96,10 +96,7 @@ abstract class Model extends ActiveRow
         throw new CannotAccessModelException($requestedModel, $this);
     }
 
-    /**
-     * @return static
-     */
-    public static function createFromActiveRow(ActiveRow $row): self
+    public static function createFromActiveRow(ActiveRow $row): static
     {
         if ($row instanceof static) {
             return $row;
