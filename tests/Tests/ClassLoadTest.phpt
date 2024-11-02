@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM\Tests\Tests;
 
-use Fykosak\NetteORM\Service;
+use Fykosak\NetteORM\Service\Service;
 use Fykosak\NetteORM\Tests\ORM\EventService;
 use Fykosak\NetteORM\Tests\ORM\ParticipantService;
 use Tester\Assert;

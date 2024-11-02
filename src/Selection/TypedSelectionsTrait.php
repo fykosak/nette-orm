@@ -2,16 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Fykosak\NetteORM;
+namespace Fykosak\NetteORM\Selection;
+
+use Fykosak\NetteORM\Mapper;
+use Fykosak\NetteORM\Model\Model;
 
 /**
- * @template M of Model
- * @phpstan-implements \Iterator<M>
+ * @template TModel of Model
  */
 trait TypedSelectionsTrait
 {
     protected Mapper $mapper;
 
+    /**
+     * @phpstan-return TypedGroupedSelection<Model>
+     */
     protected function createGroupedSelectionInstance(string $table, string $column): TypedGroupedSelection
     {
         return new TypedGroupedSelection(
@@ -24,6 +29,9 @@ trait TypedSelectionsTrait
         );
     }
 
+    /**
+     * @phpstan-return TypedSelection<Model>
+     */
     public function createSelectionInstance(?string $table = null): TypedSelection
     {
         return new TypedSelection(
@@ -35,11 +43,17 @@ trait TypedSelectionsTrait
     }
 
     /**
-     * @phpstan-return M
+     * @phpstan-return TModel
+     * @phpstan-param array<string,mixed> $row
      */
     protected function createRow(array $row): Model
     {
         $className = $this->mapper->getDefinition($this->name)['model'];
         return new $className($row, $this);
+    }
+
+    public function unsetRefCache(): void
+    {
+        $this->refCache = [];
     }
 }

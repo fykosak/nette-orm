@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM;
 
+use Fykosak\NetteORM\Model\DummyModel;
+use Fykosak\NetteORM\Model\Model;
+use Fykosak\NetteORM\Service\DummyService;
+use Fykosak\NetteORM\Service\Service;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\NotImplementedException;
@@ -23,7 +27,12 @@ class Extension extends CompilerExtension
     }
 
     /**
-     * @phpstan-param array<string,array{'service':class-string<Service<Model>>,'model':class-string<Model>,'context':mixed}> $fieldDefinitions
+     * @template TModel of Model
+     * @phpstan-param array<string,array{
+     *     service:class-string<Service<TModel>>,
+     *     model:class-string<TModel>,
+     *     context:mixed
+     * }> $fieldDefinitions
      */
     final protected function registerORMService(
         string $tableName,

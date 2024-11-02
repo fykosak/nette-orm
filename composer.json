@@ -5,8 +5,8 @@
   "license": "GPL-3.0-or-later",
   "require": {
     "php": ">=8.1",
-    "nette/di": "^3.0",
-    "nette/database": "^3.1",
+    "nette/di": "v3.*",
+    "nette/database": "v3.*",
     "ext-pdo": "*",
     "ext-gettext": "*"
   },
@@ -50,7 +50,7 @@
       "vendor/bin/tester tests -p php --coverage coverage.html --coverage-src src/ -s -c tests/php.ini -j 1"
     ],
     "testPHPStan": [
-      "vendor/bin/phpstan analyse --level 6 src/"
+      "vendor/bin/phpstan analyse --level 6 src/ tests/"
     ]
   }
 }

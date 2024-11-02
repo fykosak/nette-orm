@@ -8,7 +8,7 @@ use Fykosak\NetteORM\Tests\ORM\EventModel;
 use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
 use Fykosak\NetteORM\Tests\ORM\EventService;
 use Fykosak\NetteORM\Tests\ORM\ParticipantService;
-use Fykosak\NetteORM\TypedSelection;
+use Fykosak\NetteORM\Selection\TypedSelection;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
 use Tester\Assert;

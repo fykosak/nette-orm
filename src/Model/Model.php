@@ -2,33 +2,44 @@
 
 declare(strict_types=1);
 
-namespace Fykosak\NetteORM;
+namespace Fykosak\NetteORM\Model;
 
 use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
+use Fykosak\NetteORM\ModelRelationsParser;
+use Fykosak\NetteORM\Selection\TypedGroupedSelection;
+use Fykosak\NetteORM\Selection\TypedSelection;
 use Nette\Database\Table\ActiveRow;
-use Nette\Database\Table\Selection;
 use Nette\MemberAccessException;
 
 abstract class Model extends ActiveRow
 {
     /**
      * @phpstan-param array<string,mixed> $data
+     * @phpstan-param TypedGroupedSelection<Model>|TypedSelection<Model> $table
      */
-    final public function __construct(array $data, Selection $table)
+    final public function __construct(array $data, TypedGroupedSelection|TypedSelection $table)
     {
-        if (!$table instanceof TypedGroupedSelection && !$table instanceof TypedSelection) {
-            throw new \InvalidArgumentException(
-                'Selection must be a instance of TypedSelection or TypedGroupedSelection'
-            );
-        }
         parent::__construct($data, $table);
     }
 
     /**
-     * @return Model|mixed
+     * @phpstan-return TypedGroupedSelection<Model>
+     */
+    public function related(string $key, ?string $throughColumn = null): TypedGroupedSelection
+    {
+        $selection = parent::related($key, $throughColumn);
+        if ($selection instanceof TypedGroupedSelection) {
+            return $selection;
+        }
+        throw new \TypeError(
+            '$selection must be a instance of TypedGroupedSelection'
+        );
+    }
+
+    /**
      * @throws MemberAccessException|\ReflectionException
      */
-    public function &__get(string $key)
+    public function &__get(string $key): mixed //phpcs:ignore
     {
         $value = parent::__get($key);
         $selfReflection = new \ReflectionClass(static::class);
@@ -36,7 +47,7 @@ abstract class Model extends ActiveRow
         if (!is_null($value) && isset($docs[$key])) {
             $item = $docs[$key];
             if ($item['type']->isClass()) {
-                $returnType =  $item['reflection'];
+                $returnType = $item['reflection'];
                 if ($value instanceof ActiveRow) {
                     if ($returnType->isSubclassOf(self::class)) {
                         $value = $returnType->newInstance($value->toArray(), $value->getTable());
@@ -50,9 +61,9 @@ abstract class Model extends ActiveRow
     }
 
     /**
-     * @template M of Model
-     * @phpstan-param class-string<M> $requestedModel
-     * @phpstan-return ?M
+     * @template TModel of Model
+     * @phpstan-param class-string<TModel> $requestedModel
+     * @phpstan-return TModel|null
      * @throws CannotAccessModelException|\ReflectionException
      */
     public function getReferencedModel(string $requestedModel): ?self
@@ -85,10 +96,7 @@ abstract class Model extends ActiveRow
         throw new CannotAccessModelException($requestedModel, $this);
     }
 
-    /**
-     * @return static
-     */
-    public static function createFromActiveRow(ActiveRow $row): self
+    public static function createFromActiveRow(ActiveRow $row): static
     {
         if ($row instanceof static) {
             return $row;

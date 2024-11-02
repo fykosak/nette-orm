@@ -2,64 +2,52 @@
 
 declare(strict_types=1);
 
-namespace Fykosak\NetteORM;
+namespace Fykosak\NetteORM\Service;
 
-use Fykosak\NetteORM\Exceptions\ModelException;
+use Fykosak\NetteORM\Mapper;
+use Fykosak\NetteORM\Model\Model;
+use Fykosak\NetteORM\Selection\TypedSelection;
 use Nette\Database\Explorer;
-use Nette\SmartObject;
 
 /**
- * @template M of Model
+ * @template TModel of Model
  */
 abstract class Service
 {
-    use SmartObject;
-
-    private string $tableName;
-    public Explorer $explorer;
-    private Mapper $mapper;
-    /** @phpstan-var array<string,mixed> */
+    /** @phpstan-var array<int,array<string,mixed>> */
     private array $columns;
 
-    final public function __construct(string $tableName, Explorer $explorer, Mapper $mapper)
-    {
-        $this->tableName = $tableName;
-        $this->explorer = $explorer;
-        $this->mapper = $mapper;
+    final public function __construct(
+        private readonly string $tableName,
+        public readonly Explorer $explorer,
+        private readonly Mapper $mapper
+    ) {
     }
 
     /**
-     * @phpstan-return M|null
+     * @phpstan-return TModel|null
      */
-    public function findByPrimary(int|string|null $key): ?Model
+    public function findByPrimary(string|int|null $key): ?Model
     {
         return isset($key) ? $this->getTable()->get($key) : null;
     }
 
     /**
-     * @throws ModelException
-     * @phpstan-param M $model
+     * @phpstan-param TModel $model
+     * @throws \PDOException
      */
     public function disposeModel(Model $model): void
     {
-        try {
-            $this->checkType($model);
-            $model->delete();
-        } catch (\PDOException $exception) {
-            throw new ModelException(
-                'Error when deleting a model.',
-                (int)$exception->getCode(),
-                $exception
-            );
-        }
+        $this->checkType($model);
+        $model->delete();
     }
 
     /**
-     * @phpstan-return TypedSelection<M>
+     * @phpstan-return TypedSelection<TModel>
      */
     final public function getTable(): TypedSelection
     {
-        /** @phpstan-var TypedSelection<M> $selection */
+        /** @phpstan-var TypedSelection<TModel> $selection */
         $selection = new TypedSelection(
             $this->mapper,
             $this->explorer,
@@ -70,26 +58,23 @@ abstract class Service
     }
 
     /**
-     * @phpstan-param M|null $model
+     * @phpstan-param TModel|null $model
      * @phpstan-param array<string,mixed> $data
-     * @phpstan-return M
+     * @phpstan-return TModel
+     * @throws \PDOException
      */
     public function storeModel(array $data, ?Model $model = null): Model
     {
-        try {
-            $dataSet = $this->filterData($data);
-            if (isset($model)) {
-                $this->checkType($model);
-                $model->update($dataSet);
-                return $model;
-            }
-            return $this->getTable()->insert($dataSet);
-        } catch (\PDOException $exception) {
-            throw new ModelException('Error when storing model.', (int)$exception->getCode(), $exception);
+        $dataSet = $this->filterData($data);
+        if (isset($model)) {
+            $this->checkType($model);
+            $model->update($dataSet);
+            return $model;
         }
+        return $this->getTable()->insert($dataSet);
     }
 
-    /** @phpstan-return class-string<M> */
+    /** @phpstan-return class-string<TModel> */
     final public function getModelClassName(): string
     {
         return $this->mapper->getDefinition($this->tableName)['model'];
@@ -97,13 +82,13 @@ abstract class Service
 
     /**
      * @throws \InvalidArgumentException
-     * @phpstan-param M $model
+     * @phpstan-param TModel $model
      */
     protected function checkType(Model $model): void
     {
         $modelClassName = $this->getModelClassName();
         if (!$model instanceof $modelClassName) {
-            throw new ModelException('Service for class ' . $modelClassName . ' cannot store ' . get_class($model));
+            throw new \TypeError('Service for class ' . $modelClassName . ' cannot store ' . get_class($model));
         }
     }
 
@@ -119,7 +104,7 @@ abstract class Service
             $name = $column['name'];
             if (array_key_exists($name, $data)) {
                 if ($data[$name] instanceof \BackedEnum) {
-                    $result[$name] = $data[$name]->value;
+                     $result[$name] = $data[$name]->value;
                 } else {
                     $result[$name] = $data[$name];
                 }
@@ -129,7 +114,7 @@ abstract class Service
     }
 
     /**
-     * @phpstan-return array<string,mixed>
+     * @phpstan-return array<int,array<string,mixed>>
      */
     protected function getColumnMetadata(): array
     {
