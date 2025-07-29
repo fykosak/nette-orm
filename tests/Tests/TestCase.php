@@ -12,7 +12,7 @@ use Nette\DI\Container;
 use Nette\DI\ContainerLoader;
 use Tester\Environment;
 
-define('TEMP_DIR', __DIR__ . '/../temp');
+define('TEMP_DIR', __DIR__ . '/../../temp');
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
