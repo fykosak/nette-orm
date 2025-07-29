@@ -65,6 +65,14 @@ class ModelRelationsParser
             ) {
                 continue;
             }
+            foreach ($method->getAttributes() as $attribute) {
+                $instance = $attribute->newInstance();
+                if ($instance instanceof ReferencedFollow) {
+                    if (!$instance->follow) {
+                        continue 2;
+                    }
+                }
+            }
             $type = Type::fromString($returnType->getName());
             if (!$type->isClass()) {
                 continue;
