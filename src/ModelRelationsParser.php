@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM;
 
+use Fykosak\NetteORM\Attributes\ReferencedFollow;
 use Fykosak\NetteORM\Model\Model;
 use Nette\Utils\Reflection;
 use Nette\Utils\Type;
@@ -64,6 +65,14 @@ class ModelRelationsParser
                 || in_array($returnType->getName(), ['self', 'static', 'parent'])
             ) {
                 continue;
+            }
+            foreach ($method->getAttributes() as $attribute) {
+                $instance = $attribute->newInstance();
+                if ($instance instanceof ReferencedFollow) {
+                    if (!$instance->follow) {
+                        continue 2;
+                    }
+                }
             }
             $type = Type::fromString($returnType->getName());
             if (!$type->isClass()) {
