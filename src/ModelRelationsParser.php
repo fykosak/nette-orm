@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM;
 
+use Fykosak\NetteORM\Attributes\ReferencedFollow;
 use Fykosak\NetteORM\Model\Model;
 use Nette\Utils\Reflection;
 use Nette\Utils\Type;
