@@ -13,7 +13,7 @@ use Nette\Database\Table\GroupedSelection;
 use Nette\Database\Table\Selection;
 
 /**
- * @template TModel of Model
+ * @phpstan-template-covariant TModel of Model
  */
 class TypedGroupedSelection extends GroupedSelection
 {

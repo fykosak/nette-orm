@@ -8,7 +8,7 @@ use Fykosak\NetteORM\Mapper;
 use Fykosak\NetteORM\Model\Model;
 
 /**
- * @template TModel of Model
+ * @phpstan-template-covariant TModel of Model
  */
 trait TypedSelectionsTrait
 {

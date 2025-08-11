@@ -12,7 +12,7 @@ use Nette\Database\Explorer;
 use Nette\Database\Table\Selection;
 
 /**
- * @template TModel of Model
+ * @phpstan-template-covariant TModel of Model
  * @phpstan-extends Selection<TModel>
  * @phpstan-ignore-next-line
  */
