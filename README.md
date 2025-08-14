@@ -108,3 +108,20 @@ $myModel // any model that has define single method returned ModelEvent
 $modelEvent = ReferencedAccessor::accessModel($myModel,ModelEvent::class);
 
 ```
+
+---
+## Complete Git history
+
+This repository was split from [fskdb repo](https://github.com/fykosak/fksdb/).
+In order to have complete history of relevant files, you need to add a graft to
+your local repo copy that links both histories together
+```
+git remote add fksdb https://github.com/fykosak/fksdb.git
+git fetch fksdb
+git replace --graft 354f1903018856820eaa8a5d82f00fdbc2867b09 7bb11da6798323c708b3cb6a643b428f3f8644ee
+```
+
+Enjoy continuous history search
+```
+git log --follow src/AbstractModel.php
+```
