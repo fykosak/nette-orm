@@ -2,4 +2,6 @@
 /tests/config.local.neon
 /tests/temp/*
 !/tests/temp/.gitignore
+tests/**/*.actual
+tests/**/*.expected
 coverage.html

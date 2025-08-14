@@ -1,32 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fykosak\NetteORM\Tests\Tests;
 
-use Fykosak\NetteORM\ORMExtension;
+use Fykosak\NetteORM\Extension;
 use Nette\Bridges\DatabaseDI\DatabaseExtension;
 use Nette\Database\Explorer;
 use Nette\DI\Compiler;
 use Nette\DI\Container;
 use Nette\DI\ContainerLoader;
 use Tester\Environment;
-use Tester\TestCase;
 
-define('__TEMP__DIR__', __DIR__ . '/../temp');
+define('TEMP_DIR', __DIR__ . '/../../temp');
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-class AbstractTestCase extends TestCase {
+abstract class TestCase extends \Tester\TestCase
+{
 
     protected Container $container;
 
-    public function __construct() {
+    public function __construct()
+    {
         Environment::setup();
         error_reporting(~E_DEPRECATED);
-        $loader = new ContainerLoader(__TEMP__DIR__, true);
+        $loader = new ContainerLoader(TEMP_DIR, true);
 
         $class = $loader->load(function (Compiler $compiler) {
 
-            $compiler->addExtension('orm', new ORMExtension());
+            $compiler->addExtension('orm', new Extension());
             $compiler->addExtension('database', new DatabaseExtension());
             $compiler->loadConfig(__DIR__ . '/../config.neon');
         });
@@ -34,11 +37,13 @@ class AbstractTestCase extends TestCase {
         $this->container = new $class();
     }
 
-    public function setUp() {
-        Environment::lock('DB', __TEMP__DIR__);
+    protected function setUp(): void
+    {
+        Environment::lock('DB', TEMP_DIR);
         /** @var Explorer $explorer */
         $explorer = $this->container->getByType(Explorer::class);
-        $explorer->query("DELETE FROM `participant`;
+        $explorer->query(
+            "DELETE FROM `participant`;
 DELETE FROM `event`;
 
 INSERT INTO `event` (event_id, begin, end)
@@ -53,8 +58,8 @@ VALUES (1,1, 'Adam'),
        (5,2, 'Emil'),
        (6,3, 'Fero'),
        (7,3, 'Gustav'),
-       (8,3, 'Husák');");
+       (8,3, 'Husák');"
+        );
         parent::setUp();
     }
-
 }

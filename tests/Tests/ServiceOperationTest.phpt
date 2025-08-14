@@ -1,166 +1,141 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fykosak\NetteORM\Tests\Tests;
 
-use Fykosak\NetteORM\Exceptions\ModelException;
-use Fykosak\NetteORM\Tests\ORM\ModelParticipant;
-use Fykosak\NetteORM\Tests\ORM\ServiceEvent;
-use Fykosak\NetteORM\Tests\ORM\ServiceParticipant;
+use Fykosak\NetteORM\Tests\ORM\EventService;
+use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
+use Fykosak\NetteORM\Tests\ORM\ParticipantService;
+use Nette\Database\ForeignKeyConstraintViolationException;
 use Tester\Assert;
 
-require_once __DIR__ . '/AbstractTestCase.php';
+require_once __DIR__ . '/TestCase.php';
 
-class ServiceOperationTest extends AbstractTestCase {
+class ServiceOperationTest extends TestCase
+{
 
-    public function testCreateSuccess(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
+    public function testCreateSuccess(): void
+    {
+        /** @var ParticipantService $serviceParticipant */
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $countBefore = $serviceParticipant->getTable()->count('*');
 
-        $newEvent = $serviceParticipant->createNewModel(['event_id' => 1, 'name' => 'Igor']);
+        $newEvent = $serviceParticipant->storeModel(['event_id' => 1, 'name' => 'Igor']);
         $countAfter = $serviceParticipant->getTable()->count('*');
 
         Assert::same($countBefore + 1, $countAfter);
-        Assert::type(ModelParticipant::class, $newEvent);
+        Assert::type(ParticipantModel::class, $newEvent);
         Assert::same('Igor', $newEvent->name);
     }
 
-    public function testCreateError(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
+    public function testCreateError(): void
+    {
+        /** @var ParticipantService $serviceParticipant */
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $countBefore = $serviceParticipant->getTable()->count('*');
         Assert::exception(function () use ($serviceParticipant) {
-            $serviceParticipant->createNewModel(['event_id' => 4, 'name' => 'Igor']);
-        }, ModelException::class);
+            $serviceParticipant->storeModel(['event_id' => 4, 'name' => 'Igor']);
+        }, ForeignKeyConstraintViolationException::class);
 
         $countAfter = $serviceParticipant->getTable()->count('*');
 
         Assert::same($countBefore, $countAfter);
     }
 
-    public function testFindByPrimary(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
+    public function testFindByPrimary(): void
+    {
+        /** @var ParticipantService $serviceParticipant */
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $participant = $serviceParticipant->findByPrimary(1);
 
         Assert::same('Adam', $participant->name);
-        Assert::type(ModelParticipant::class, $participant);
+        Assert::type(ParticipantModel::class, $participant);
 
         $nullParticipant = $serviceParticipant->findByPrimary(10);
         Assert::null($nullParticipant);
     }
 
-    public function testFindByPrimaryProtection(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
+    public function testFindByPrimaryProtection(): void
+    {
+        /** @var ParticipantService $serviceParticipant */
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $participant = $serviceParticipant->findByPrimary(null);
 
         Assert::null($participant);
     }
 
-    public function testLegacyUpdateSuccess(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
+    public function testUpdateSuccess(): void
+    {
+        /** @var ParticipantService $serviceParticipant */
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $participant = $serviceParticipant->findByPrimary(2);
-        $serviceParticipant->updateModel2($participant, ['name' => 'Betka']);
+        $serviceParticipant->storeModel(['name' => 'Betka'], $participant);
         Assert::same('Betka', $participant->name);
-        Assert::type(ModelParticipant::class, $participant);
+        Assert::type(ParticipantModel::class, $participant);
     }
 
-    public function testLegacyUpdateError(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
+    public function testUpdateError(): void
+    {
+        /** @var ParticipantService $serviceParticipant */
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $participant = $serviceParticipant->findByPrimary(2);
 
         Assert::exception(function () use ($participant, $serviceParticipant) {
-            $serviceParticipant->updateModel2($participant, ['event_id' => 4]);
-        }, ModelException::class);
+            $serviceParticipant->storeModel(['event_id' => 4], $participant);
+        }, ForeignKeyConstraintViolationException::class);
         Assert::same('Bára', $participant->name);
     }
 
-    public function testUpdateSuccess(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
-        $participant = $serviceParticipant->findByPrimary(2);
-        $serviceParticipant->updateModel($participant, ['name' => 'Betka']);
-        Assert::same('Betka', $participant->name);
-        Assert::type(ModelParticipant::class, $participant);
-    }
-
-    public function testUpdateError(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
-        $participant = $serviceParticipant->findByPrimary(2);
-
-        Assert::exception(function () use ($participant, $serviceParticipant) {
-            $serviceParticipant->updateModel($participant, ['event_id' => 4]);
-        }, ModelException::class);
-        Assert::same('Bára', $participant->name);
-    }
-
-    public function testLegacyStoreExists(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
-        $participant = $serviceParticipant->findByPrimary(2);
-        $newParticipant = $serviceParticipant->store($participant, ['name' => 'Betka']);
-        Assert::same($participant, $newParticipant);
-        Assert::same('Betka', $participant->name);
-        Assert::type(ModelParticipant::class, $participant);
-    }
-
-    public function testStoreExists(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
+    public function testStoreExists(): void
+    {
+        /** @var ParticipantService $serviceParticipant */
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $participant = $serviceParticipant->findByPrimary(2);
         $newParticipant = $serviceParticipant->storeModel(['name' => 'Betka'], $participant);
         Assert::same($participant, $newParticipant);// must be a same obj
         Assert::same('Betka', $participant->name);
-        Assert::type(ModelParticipant::class, $participant);
+        Assert::type(ParticipantModel::class, $participant);
     }
 
-    public function testLegacyStoreNew(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
-        $newParticipant = $serviceParticipant->store(null, ['event_id' => 1, 'name' => 'Igor']);
-        Assert::same('Igor', $newParticipant->name);
-        Assert::type(ModelParticipant::class, $newParticipant);
-    }
-
-    public function testStoreNew(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
+    public function testStoreNew(): void
+    {
+        /** @var ParticipantService $serviceParticipant */
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $newParticipant = $serviceParticipant->storeModel(['event_id' => 1, 'name' => 'Igor'], null);
         Assert::same('Igor', $newParticipant->name);
-        Assert::type(ModelParticipant::class, $newParticipant);
+        Assert::type(ParticipantModel::class, $newParticipant);
     }
 
-    public function testDelete(): void {
-        /** @var ServiceParticipant $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
+    public function testDelete(): void
+    {
+        /** @var ParticipantService $serviceParticipant */
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         $participant = $serviceParticipant->findByPrimary(2);
         $countBefore = $serviceParticipant->getTable()->count('*');
-        $serviceParticipant->dispose($participant);
+        $serviceParticipant->disposeModel($participant);
         $countAfter = $serviceParticipant->getTable()->count('*');
         Assert::same($countBefore - 1, $countAfter);
     }
 
-    public function testType(): void {
-        $serviceParticipant = $this->container->getByType(ServiceParticipant::class);
-        $serviceEvent = $this->container->getByType(ServiceEvent::class);
+    public function testType(): void
+    {
+        $serviceParticipant = $this->container->getByType(ParticipantService::class);
+        $serviceEvent = $this->container->getByType(EventService::class);
         $event = $serviceEvent->getTable()->fetch();
         Assert::exception(function () use ($event, $serviceParticipant) {
-            $serviceParticipant->dispose($event);
-        }, \InvalidArgumentException::class);
+            $serviceParticipant->disposeModel($event);
+        }, \TypeError::class);
     }
 
-    public function testDeleteError(): void {
-        $serviceEvent = $this->container->getByType(ServiceEvent::class);
+    public function testDeleteError(): void
+    {
+        $serviceEvent = $this->container->getByType(EventService::class);
         $event = $serviceEvent->getTable()->fetch();
         Assert::exception(function () use ($event, $serviceEvent) {
-            $serviceEvent->dispose($event);
-        }, ModelException::class);
+            $serviceEvent->disposeModel($event);
+        }, ForeignKeyConstraintViolationException::class);
     }
-
 }
 
 $testCase = new ServiceOperationTest();

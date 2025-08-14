@@ -1,57 +1,61 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fykosak\NetteORM\Tests\Tests;
 
-use Fykosak\NetteORM\Tests\ORM\ModelEvent;
-use Fykosak\NetteORM\Tests\ORM\ModelParticipant;
-use Fykosak\NetteORM\Tests\ORM\ServiceEvent;
-use Fykosak\NetteORM\Tests\ORM\ServiceParticipant;
-use Fykosak\NetteORM\TypedTableSelection;
+use Fykosak\NetteORM\Tests\ORM\EventModel;
+use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
+use Fykosak\NetteORM\Tests\ORM\EventService;
+use Fykosak\NetteORM\Tests\ORM\ParticipantService;
+use Fykosak\NetteORM\Selection\TypedSelection;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
 use Tester\Assert;
 
-require_once __DIR__ . '/AbstractTestCase.php';
+require_once __DIR__ . '/TestCase.php';
 
-class TableSelectionTest extends AbstractTestCase {
+class TableSelectionTest extends TestCase
+{
 
-    public function testType(): void {
-        /** @var ServiceEvent $serviceEvent */
-        $serviceEvent = $this->container->getByType(ServiceEvent::class);
+    public function testType(): void
+    {
+        /** @var EventService $serviceEvent */
+        $serviceEvent = $this->container->getByType(EventService::class);
         $selection = $serviceEvent->getTable();
-        Assert::type(TypedTableSelection::class, $selection);
+        Assert::type(TypedSelection::class, $selection);
         Assert::type(Selection::class, $selection);
         $event = $selection->fetch();
         Assert::type(ActiveRow::class, $event);
-        Assert::type(ModelEvent::class, $event);
+        Assert::type(EventModel::class, $event);
     }
 
-    public function testReferenced(): void {
-        /** @var ServiceParticipant $serviceEvent */
-        $serviceEvent = $this->container->getByType(ServiceParticipant::class);
+    public function testReferenced(): void
+    {
+        /** @var ParticipantService $serviceEvent */
+        $serviceEvent = $this->container->getByType(ParticipantService::class);
         $participant = $serviceEvent->getTable()->fetch();
 
-        Assert::type(ModelParticipant::class, $participant);
-        $event = $participant->getEvent();
-        Assert::type(ModelEvent::class, $event);
+        Assert::type(ParticipantModel::class, $participant);
+        $event = $participant->event;
+        Assert::type(EventModel::class, $event);
     }
 
-    public function testRelated(): void {
-        /** @var ServiceParticipant $serviceEvent */
-        $serviceEvent = $this->container->getByType(ServiceEvent::class);
+    public function testRelated(): void
+    {
+        /** @var ParticipantService $serviceEvent */
+        $serviceEvent = $this->container->getByType(EventService::class);
         $event = $serviceEvent->getTable()->fetch();
-        $row = $event->related('participant')->fetch();
-
-        Assert::false($row instanceof ModelParticipant);
-        $participant = ModelParticipant::createFromActiveRow($row);
-        Assert::type(ModelParticipant::class, $participant);
+        $participant = $event->related('participant')->fetch();
+        Assert::type(ParticipantModel::class, $participant);
     }
 
-    public function testPassModel(): void {
-        /** @var ServiceParticipant $serviceEvent */
-        $serviceEvent = $this->container->getByType(ServiceEvent::class);
+    public function testPassModel(): void
+    {
+        /** @var ParticipantService $serviceEvent */
+        $serviceEvent = $this->container->getByType(EventService::class);
         $event = $serviceEvent->getTable()->fetch();
-        $newEvent = ModelEvent::createFromActiveRow($event);
+        $newEvent = EventModel::createFromActiveRow($event);
         Assert::same($event, $newEvent);
     }
 }

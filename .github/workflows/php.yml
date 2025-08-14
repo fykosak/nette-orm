@@ -5,11 +5,11 @@ on: [push, pull_request]
 jobs:
   test:
     name: PHP ${{ matrix.php }} with ${{ matrix.database }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        php: [ '7.4', '8.0']
+        php: [ '8.3' ]
         database: [ 'mysql' ]
     steps:
       # MariaDB container has to be started in advance to initialize itself before using it.
@@ -35,15 +35,15 @@ jobs:
       - run: composer run-script initTestDatabase
         name: Init test database
       - run: composer run-script testCoverage
-        name: Test 
+        name: Test
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: code-coverage-report
+          name: code-coverage-report ${{ matrix.php }} with ${{ matrix.database }}
           path: coverage.html
       - if: failure()
         name: Failure output
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: output
+          name: output ${{ matrix.php }} with ${{ matrix.database }}
           path: tests/**/*.actual
