@@ -55,7 +55,7 @@ abstract class Model extends ActiveRow
                     }
                 } elseif ($returnType->isSubclassOf(\BackedEnum::class)) {
                     $value = $returnType->getMethod('tryFrom')->invoke($returnType, $value);
-                } elseif ($returnType->isSubclassOf(WGS84Point::class)) {
+                } elseif ($returnType->name === WGS84Point::class) {
                     $value = $returnType->getMethod('fromBytes')->invoke($returnType, $value);
                 }
             }
