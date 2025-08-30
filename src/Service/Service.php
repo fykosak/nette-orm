@@ -7,6 +7,7 @@ namespace Fykosak\NetteORM\Service;
 use Fykosak\NetteORM\Mapper;
 use Fykosak\NetteORM\Model\Model;
 use Fykosak\NetteORM\Selection\TypedSelection;
+use Fykosak\NetteORM\Types\WGS84Point;
 use Nette\Database\Explorer;
 
 /**
@@ -104,7 +105,9 @@ abstract class Service
             $name = $column['name'];
             if (array_key_exists($name, $data)) {
                 if ($data[$name] instanceof \BackedEnum) {
-                     $result[$name] = $data[$name]->value;
+                    $result[$name] = $data[$name]->value;
+                } elseif ($data[$name] instanceof WGS84Point) {
+                    $result[$name] = $data[$name]->toString();
                 } else {
                     $result[$name] = $data[$name];
                 }
