@@ -8,6 +8,7 @@ use Fykosak\NetteORM\Exceptions\CannotAccessModelException;
 use Fykosak\NetteORM\ModelRelationsParser;
 use Fykosak\NetteORM\Selection\TypedGroupedSelection;
 use Fykosak\NetteORM\Selection\TypedSelection;
+use Fykosak\NetteORM\Types\WGS84Point;
 use Nette\Database\Table\ActiveRow;
 use Nette\MemberAccessException;
 
@@ -54,6 +55,8 @@ abstract class Model extends ActiveRow
                     }
                 } elseif ($returnType->isSubclassOf(\BackedEnum::class)) {
                     $value = $returnType->getMethod('tryFrom')->invoke($returnType, $value);
+                } elseif ($returnType->isSubclassOf(WGS84Point::class)) {
+                    $value = $returnType->getMethod('fromBytes')->invoke($returnType, $value);
                 }
             }
         }
