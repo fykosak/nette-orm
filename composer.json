@@ -6,7 +6,7 @@
   "require": {
     "php": ">=8.3",
     "nette/di": "v3.*",
-    "nette/database": "v3.*",
+    "nette/database": "^v3.2.7",
     "ext-pdo": "*",
     "ext-gettext": "*"
   },
