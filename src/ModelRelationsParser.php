@@ -13,7 +13,7 @@ class ModelRelationsParser
 {
     /**
      * @phpstan-param \ReflectionClass<Model> $modelReflection
-     * @phpstan-return array<string,array{type:Type,reflection:\ReflectionClass<Model>|null,property:string}>
+     * @phpstan-return array<string,array{type:Type,reflection:\ReflectionClass<mixed>|null,property:string}>
      * @throws \ReflectionException
      */
     public static function parseModelDoc(\ReflectionClass $modelReflection): ?array

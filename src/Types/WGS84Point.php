@@ -1,4 +1,4 @@
-<?php
+<?php //phpcs:ignore
 
 declare(strict_types=1);
 
@@ -6,9 +6,6 @@ namespace Fykosak\NetteORM\Types;
 
 use Nette\InvalidStateException;
 
-/**
- * @todo supports more types
- */
 final readonly class WGS84Point
 {
     protected const int GPSSRId = 4326; //phpcs:ignore
