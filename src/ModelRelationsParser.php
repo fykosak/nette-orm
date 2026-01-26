@@ -56,24 +56,31 @@ class ModelRelationsParser
     {
         $items = [];
         foreach ($model->getMethods() as $method) {
-            $name = $method->getName();
-            /** @var \ReflectionNamedType|null $returnType */
-            $returnType = $method->getReturnType();
-            if (
-                !$returnType
-                || count($method->getParameters())
-                || in_array($returnType->getName(), ['self', 'static', 'parent'])
-            ) {
-                continue;
-            }
+            $follow = false;
             foreach ($method->getAttributes() as $attribute) {
                 $instance = $attribute->newInstance();
                 if ($instance instanceof ReferencedFollow) {
-                    if (!$instance->follow) {
-                        continue 2;
-                    }
+                    $follow = true;
                 }
             }
+            if (!$follow) {
+                continue;
+            }
+            /** @var \ReflectionNamedType|null $returnType */
+            $returnType = $method->getReturnType();
+            if (is_null($returnType)) {
+                continue;
+            }
+            foreach ($method->getParameters() as $parameter) {
+                if (!$parameter->isOptional()) {
+                    continue 2;
+                }
+            }
+
+            if (in_array($returnType->getName(), ['self', 'static', 'parent'])) {
+                continue;
+            }
+
             $type = Type::fromString($returnType->getName());
             if (!$type->isClass()) {
                 continue;
@@ -85,7 +92,7 @@ class ModelRelationsParser
             if ($itemReflection->isSubclassOf(Model::class)) {
                 $items[$itemReflection->name] = [
                     'type' => 'method',
-                    'accessor' => $name,
+                    'accessor' => $method->getName(),
                     'reflection' => $itemReflection,
                     'nullable' => $returnType->allowsNull(),
                 ];

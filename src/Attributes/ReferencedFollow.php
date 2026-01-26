@@ -9,7 +9,7 @@ use Attribute;
 #[Attribute(\Attribute::TARGET_METHOD)]
 class ReferencedFollow
 {
-    public function __construct(public bool $follow = true)
+    public function __construct()
     {
     }
 }
