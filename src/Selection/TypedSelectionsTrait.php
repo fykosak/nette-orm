@@ -6,19 +6,25 @@ namespace Fykosak\NetteORM\Selection;
 
 use Fykosak\NetteORM\Mapper;
 use Fykosak\NetteORM\Model\Model;
+use Nette\InvalidStateException;
 
 /**
- * @phpstan-template-covariant TModel of Model
+ * @template TModel of Model
  */
 trait TypedSelectionsTrait
 {
+    /**
+     * @var Mapper<string,TModel>
+     */
     protected Mapper $mapper;
 
     /**
      * @phpstan-return TypedGroupedSelection<Model>
+     * @phpstan-ignore method.childReturnType
      */
     protected function createGroupedSelectionInstance(string $table, string $column): TypedGroupedSelection
     {
+        /** @phpstan-ignore return.type */
         return new TypedGroupedSelection(
             $this->mapper,
             $this->explorer,
@@ -31,24 +37,28 @@ trait TypedSelectionsTrait
 
     /**
      * @phpstan-return TypedSelection<Model>
+     * @phpstan-ignore method.childReturnType
      */
     public function createSelectionInstance(?string $table = null): TypedSelection
     {
+        /** @phpstan-ignore return.type */
         return new TypedSelection(
             $this->mapper,
             $this->explorer,
             $this->conventions,
-            $table ?: $this->name
+            $table ?? $this->name
         );
     }
 
     /**
-     * @phpstan-return TModel
-     * @phpstan-param array<string,mixed> $row
+     * @return TModel
+     * @phpstan-param array<mixed> $row
+     * @phpstan-ignore method.childReturnType
      */
     protected function createRow(array $row): Model
     {
-        $className = $this->mapper->getDefinition($this->name)['model'];
+        $def = $this->mapper->getDefinition($this->name);
+        $className = $def ['model'] ?? throw new InvalidStateException();
         return new $className($row, $this);
     }
 

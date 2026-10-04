@@ -6,27 +6,29 @@ namespace Fykosak\NetteORM\Selection;
 
 use Fykosak\NetteORM\Mapper;
 use Fykosak\NetteORM\Model\Model;
-use Nette\Caching\IStorage;
+use Nette\Caching\Storage;
 use Nette\Database\Conventions;
 use Nette\Database\Explorer;
 use Nette\Database\Table\Selection;
 
 /**
- * @phpstan-template-covariant TModel of Model
- * @phpstan-extends Selection<TModel>
- * @phpstan-ignore-next-line
+ * @template TModel of Model
+ * @extends Selection<TModel>
  */
 class TypedSelection extends Selection
 {
     /** @phpstan-use TypedSelectionsTrait<TModel> */
     use TypedSelectionsTrait;
 
+    /**
+     * @param Mapper<string,TModel> $mapper
+     */
     public function __construct(
         Mapper $mapper,
         Explorer $explorer,
         Conventions $conventions,
         string $tableName,
-        ?IStorage $cacheStorage = null
+        ?Storage $cacheStorage = null
     ) {
         parent::__construct($explorer, $conventions, $tableName, $cacheStorage);
         $this->mapper = $mapper;

@@ -4,16 +4,18 @@
   "type": "library",
   "license": "GPL-3.0-or-later",
   "require": {
-    "php": ">=8.3",
-    "nette/di": "v3.*",
-    "nette/database": "^v3.2.7",
+    "php": ">=8.5",
+    "nette/di": "^v3.2",
+    "nette/database": "^v3.2.4",
     "ext-pdo": "*",
     "ext-gettext": "*"
   },
   "require-dev": {
-    "nette/tester": "^2.4.0",
-    "squizlabs/php_codesniffer": "3.6.0",
-    "phpstan/phpstan": "2.1.21"
+    "nette/tester": "^v2.6.2",
+    "squizlabs/php_codesniffer": "^3.13.6",
+    "phpstan/phpstan": "^2.2.16",
+    "phpstan/phpstan-nette": "^2.0.12",
+    "phpstan/phpstan-strict-rules": "^2.0.12"
   },
   "authors": [
     {
@@ -50,7 +52,7 @@
       "vendor/bin/tester tests -p php --coverage coverage.html --coverage-src src/ -s -c tests/php.ini -j 1"
     ],
     "testPHPStan": [
-      "vendor/bin/phpstan analyse --level 6 src/ tests/"
+      "vendor/bin/phpstan analyse -c phpstan.neon"
     ]
   }
 }

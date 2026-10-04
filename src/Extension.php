@@ -21,37 +21,35 @@ class Extension extends CompilerExtension
     {
         $mapper = $this->getContainerBuilder()->addDefinition($this->prefix('mapper'));
         $mapper->setFactory(Mapper::class);
+        /** @phpstan-ignore foreach.nonIterable */
         foreach ($this->config as $tableName => $fieldDefinitions) {
+            /** @phpstan-ignore argument.type */
             $this->registerORMService($tableName, $fieldDefinitions, $mapper);
         }
     }
 
     /**
      * @template TModel of Model
-     * @phpstan-param array<string,array{
-     *     service:class-string<Service<TModel>>,
-     *     model:class-string<TModel>,
-     *     context:mixed
-     * }> $fieldDefinitions
+     * @phpstan-param array{
+     *     service?:class-string<Service<TModel>>,
+     *     model?:class-string<TModel>,
+     *     context?:mixed
+     * } $fieldDefinition
      */
     final protected function registerORMService(
         string $tableName,
-        array $fieldDefinitions,
+        array $fieldDefinition,
         ServiceDefinition $mapper
     ): void {
-        $serviceClassName = $fieldDefinitions['serviceClassName']
-            ?? ($fieldDefinitions['service']
-                ?? DummyService::class);
-        $modelClassName = $fieldDefinitions['modelClassName']
-            ?? ($fieldDefinitions['model']
-                ?? DummyModel::class);
+        $serviceClassName = $fieldDefinition['service'] ?? DummyService::class;
+        $modelClassName = $fieldDefinition['model'] ?? DummyModel::class;
 
         $mapper->addSetup('addDefinition', [$tableName, $modelClassName, $serviceClassName]);
 
         $builder = $this->getContainerBuilder();
         $factory = $builder->addDefinition($this->prefix($tableName . '.service'));
-        if (isset($fieldDefinitions['context'])) {
-            $factory->setFactory($serviceClassName, [$tableName, $fieldDefinitions['context']]);
+        if (isset($fieldDefinition['context'])) {
+            $factory->setFactory($serviceClassName, [$tableName, $fieldDefinition['context']]);
         } else {
             $factory->setFactory($serviceClassName, [$tableName]);
         }

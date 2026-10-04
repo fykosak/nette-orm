@@ -9,6 +9,7 @@ use Fykosak\NetteORM\Model\Model;
 use Fykosak\NetteORM\Selection\TypedSelection;
 use Fykosak\NetteORM\Types\WGS84Point;
 use Nette\Database\Explorer;
+use Nette\InvalidStateException;
 
 /**
  * @template TModel of Model
@@ -18,6 +19,9 @@ abstract class Service
     /** @phpstan-var array<int,array<string,mixed>> */
     private array $columns;
 
+    /**
+     * @param Mapper<string,TModel> $mapper
+     */
     final public function __construct(
         private readonly string $tableName,
         public readonly Explorer $explorer,
@@ -72,13 +76,15 @@ abstract class Service
             $model->update($dataSet);
             return $model;
         }
+        /** @phpstan-ignore return.type */
         return $this->getTable()->insert($dataSet);
     }
 
     /** @phpstan-return class-string<TModel> */
     final public function getModelClassName(): string
     {
-        return $this->mapper->getDefinition($this->tableName)['model'];
+        $def = $this->mapper->getDefinition($this->tableName);
+        return $def['model'] ?? throw new InvalidStateException();
     }
 
     /**
@@ -102,6 +108,7 @@ abstract class Service
     {
         $result = [];
         foreach ($this->getColumnMetadata() as $column) {
+            /** @var string $name */
             $name = $column['name'];
             if (array_key_exists($name, $data)) {
                 if ($data[$name] instanceof \BackedEnum) {

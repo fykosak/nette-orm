@@ -6,26 +6,25 @@ namespace Fykosak\NetteORM;
 
 use Fykosak\NetteORM\Model\Model;
 use Fykosak\NetteORM\Service\Service;
-use Nette\SmartObject;
+use Throwable;
 
 /**
- * @phpstan-type MapperItem array{
- *     model:class-string<Model>,
- *     service:class-string<Service<Model>>
- *     }
+ * @template TKey of string
+ * @template TModel of Model
  */
 class Mapper
 {
-    use SmartObject;
-
     /**
-     * @phpstan-var array<string,MapperItem>
+     * @phpstan-var array<TKey, array{
+     *      model: class-string<TModel>,
+     *      service: class-string<Service<TModel>>
+     *  }>
      */
     private array $map = [];
 
     /**
-     * @template TModel of Model
-     * @throws \Exception
+     * @throws Throwable
+     * @phpstan-param TKey $table
      * @phpstan-param class-string<TModel> $model
      * @phpstan-param class-string<Service<TModel>> $service
      */
@@ -38,7 +37,11 @@ class Mapper
     }
 
     /**
-     * @phpstan-return MapperItem
+     * @phpstan-param TKey $table
+     * @phpstan-return array{
+     *       model: class-string<TModel>,
+     *       service: class-string<Service<TModel>>
+     *   }|null
      */
     public function getDefinition(string $table): ?array
     {

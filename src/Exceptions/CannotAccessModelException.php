@@ -10,8 +10,9 @@ use RuntimeException;
 class CannotAccessModelException extends RuntimeException
 {
     /**
-     * @phpstan-param class-string<Model> $modelClassName
-     * @phpstan-param Model $model
+     * @phpstan-template M of Model
+     * @phpstan-param class-string<M> $modelClassName
+     * @phpstan-param M $model
      */
     public function __construct(
         public readonly string $modelClassName,

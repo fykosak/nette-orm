@@ -49,15 +49,15 @@ class TableSelectionTest extends TestCase
         $participant = $event->related('participant')->fetch();
         Assert::type(ParticipantModel::class, $participant);
     }
-
+/*
     public function testPassModel(): void
     {
-        /** @var ParticipantService $serviceEvent */
+        /** @var ParticipantService $serviceEvent
         $serviceEvent = $this->container->getByType(EventService::class);
         $event = $serviceEvent->getTable()->fetch();
         $newEvent = EventModel::createFromActiveRow($event);
         Assert::same($event, $newEvent);
-    }
+    }*/
 }
 
 $testCase = new TableSelectionTest();

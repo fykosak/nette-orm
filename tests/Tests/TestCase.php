@@ -32,6 +32,7 @@ abstract class TestCase extends \Tester\TestCase
             $compiler->addExtension('orm', new Extension());
             $compiler->addExtension('database', new DatabaseExtension());
             $compiler->loadConfig(__DIR__ . '/../config.neon');
+            return null;
         });
 
         $this->container = new $class();

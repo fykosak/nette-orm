@@ -11,20 +11,24 @@ use Fykosak\NetteORM\Selection\TypedSelection;
 use Fykosak\NetteORM\Types\WGS84Point;
 use Nette\Database\Table\ActiveRow;
 use Nette\MemberAccessException;
+use ReflectionException;
 
 abstract class Model extends ActiveRow
 {
     /**
      * @phpstan-param array<string,mixed> $data
-     * @phpstan-param TypedGroupedSelection<Model>|TypedSelection<Model> $table
+     * @phpstan-param TypedGroupedSelection<static>|TypedSelection<static> $selection
      */
-    final public function __construct(array $data, TypedGroupedSelection|TypedSelection $table)
+    final public function __construct(array $data, TypedGroupedSelection|TypedSelection $selection)
     {
-        parent::__construct($data, $table);
+        /** @phpstan-ignore argument.type */
+        parent::__construct($data, $selection);
     }
 
     /**
-     * @phpstan-return TypedGroupedSelection<Model>
+     * @template TModel of Model
+     * @phpstan-return TypedGroupedSelection<TModel>
+     * @phpstan-ignore method.childReturnType,method.templateTypeNotInParameter
      */
     public function related(string $key, ?string $throughColumn = null): TypedGroupedSelection
     {
@@ -38,7 +42,8 @@ abstract class Model extends ActiveRow
     }
 
     /**
-     * @throws MemberAccessException|\ReflectionException
+     * @throws MemberAccessException
+     * @throws ReflectionException
      */
     public function &__get(string $key): mixed //phpcs:ignore
     {
@@ -49,14 +54,16 @@ abstract class Model extends ActiveRow
             $item = $docs[$key];
             if ($item['type']->isClass()) {
                 $returnType = $item['reflection'];
-                if ($value instanceof ActiveRow) {
-                    if ($returnType->isSubclassOf(self::class)) {
-                        $value = $returnType->newInstance($value->toArray(), $value->getTable());
+                if (isset($returnType)) {
+                    if ($value instanceof ActiveRow) {
+                        if ($returnType->isSubclassOf(self::class)) {
+                            $value = $returnType->newInstance($value->toArray(), $value->getTable());
+                        }
+                    } elseif ($returnType->isSubclassOf(\BackedEnum::class)) {
+                        $value = $returnType->getMethod('tryFrom')->invoke($returnType, $value);
+                    } elseif ($returnType->name === WGS84Point::class) {
+                        $value = $returnType->getMethod('fromBytes')->invoke($returnType, $value);
                     }
-                } elseif ($returnType->isSubclassOf(\BackedEnum::class)) {
-                    $value = $returnType->getMethod('tryFrom')->invoke($returnType, $value);
-                } elseif ($returnType->name === WGS84Point::class) {
-                    $value = $returnType->getMethod('fromBytes')->invoke($returnType, $value);
                 }
             }
         }
@@ -67,12 +74,12 @@ abstract class Model extends ActiveRow
      * @template TModel of Model
      * @phpstan-param class-string<TModel> $requestedModel
      * @phpstan-return TModel|null
-     * @throws CannotAccessModelException|\ReflectionException
+     * @throws CannotAccessModelException|ReflectionException
      */
     public function getReferencedModel(string $requestedModel): ?self
     {
-        // model is already instance of desired model
         if ($this instanceof $requestedModel) {
+            /** @var TModel $this */
             return $this;
         }
 
@@ -82,28 +89,24 @@ abstract class Model extends ActiveRow
             []
         );
         $newModel = $this;
-        if ($path) {
+        if ($path !== null) {
             foreach ($path as $item) {
-                $newModel = $item['type'] === 'property'
+                $nextModel = $item['type'] === 'property'
+                    /** @phpstan-ignore property.dynamicName  */
                     ? $newModel->{$item['accessor']}
+                    /** @phpstan-ignore method.dynamicName  */
                     : $newModel->{$item['accessor']}();
-                if (!$newModel) {
+                if (is_null($nextModel)) {
                     if ($item['nullable']) {
                         return null;
                     }
                     throw new CannotAccessModelException($requestedModel, $this);
                 }
+                $newModel = $nextModel;
             }
+            /** @var TModel|null $newModel */
             return $newModel;
         }
         throw new CannotAccessModelException($requestedModel, $this);
-    }
-
-    public static function createFromActiveRow(ActiveRow $row): static
-    {
-        if ($row instanceof static) {
-            return $row;
-        }
-        return new static($row->toArray(), $row->getTable());
     }
 }

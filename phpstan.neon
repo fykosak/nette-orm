@@ -1,0 +1,28 @@
+includes:
+    - vendor/phpstan/phpstan-nette/extension.neon
+    - vendor/phpstan/phpstan-nette/rules.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+parameters:
+    phpVersion: 80500 # php 8.3
+    level: 9
+    parallel:
+        maximumNumberOfProcesses: 9
+    paths:
+        - src
+        - tests
+    ignoreErrors:
+        - identifier: generics.interfaceConflict
+
+    treatPhpDocTypesAsCertain: false
+    polluteScopeWithLoopInitialAssignments: false
+    polluteScopeWithAlwaysIterableForeach: false
+    checkExplicitMixedMissingReturn: true
+    checkFunctionNameCase: true
+    checkInternalClassCaseSensitivity: true
+    reportMaybesInMethodSignatures: true
+    reportMaybesInPropertyPhpDocTypes: true
+    reportStaticMethodSignatures: true
+    checkDynamicProperties: true
+    reportWrongPhpDocTypeInVarTag: true
+    strictRules:
+        allRules: true
