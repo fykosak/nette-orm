@@ -2,8 +2,8 @@ services:
     - Nette\Caching\Storages\FileStorage(/tmp)
 orm:
     event:
-        modelClassName: Fykosak\NetteORM\Tests\ORM\EventModel
-        serviceClassName: Fykosak\NetteORM\Tests\ORM\EventService
+        model: Fykosak\NetteORM\Tests\ORM\EventModel
+        service: Fykosak\NetteORM\Tests\ORM\EventService
     participant:
         model: Fykosak\NetteORM\Tests\ORM\ParticipantModel
         service: Fykosak\NetteORM\Tests\ORM\ParticipantService
