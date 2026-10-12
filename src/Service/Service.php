@@ -13,10 +13,22 @@ use Nette\InvalidStateException;
 
 /**
  * @template TModel of Model
+ * @phpstan-type ColumnMeta array{
+ *      name: string,
+ *      table: string,
+ *      nativetype: string,
+ *      size: ?int,
+ *      nullable: bool,
+ *      default: mixed,
+ *      autoincrement: bool,
+ *      primary: bool,
+ *      comment: ?string,
+ *      vendor: array<string, mixed>
+ *  }
  */
 abstract class Service
 {
-    /** @phpstan-var array<int,array<string,mixed>> */
+    /** @phpstan-var list<ColumnMeta> */
     private array $columns;
 
     /**
@@ -30,7 +42,7 @@ abstract class Service
     }
 
     /**
-     * @phpstan-return TModel|null
+     * @phpstan-return Model|null
      */
     public function findByPrimary(string|int|null $key): ?Model
     {
@@ -38,7 +50,7 @@ abstract class Service
     }
 
     /**
-     * @phpstan-param TModel $model
+     * @phpstan-param Model $model
      * @throws \PDOException
      */
     public function disposeModel(Model $model): void
@@ -63,9 +75,9 @@ abstract class Service
     }
 
     /**
-     * @phpstan-param TModel|null $model
+     * @phpstan-param Model|null $model
      * @phpstan-param array<string,mixed> $data
-     * @phpstan-return TModel
+     * @phpstan-return Model
      * @throws \PDOException
      */
     public function storeModel(array $data, ?Model $model = null): Model
@@ -89,7 +101,7 @@ abstract class Service
 
     /**
      * @throws \InvalidArgumentException
-     * @phpstan-param TModel $model
+     * @phpstan-param Model $model
      */
     protected function checkType(Model $model): void
     {
@@ -124,9 +136,9 @@ abstract class Service
     }
 
     /**
-     * @phpstan-return array<int,array<string,mixed>>
+     * @return list<ColumnMeta>
      */
-    protected function getColumnMetadata(): array
+    public function getColumnMetadata(): array
     {
         if (!isset($this->columns)) {
             $this->columns = $this->explorer->getConnection()->getDriver()->getColumns($this->tableName);
