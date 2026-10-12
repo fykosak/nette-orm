@@ -20,7 +20,7 @@ class CheckEnum implements ValidatorCheck
         if ($metadata['nativetype'] === 'ENUM') {
             try {
                 /** @phpstan-ignore argument.type */
-                $docReflection = new \ReflectionEnum($dbType->getSingleName());
+                $docReflection = new \ReflectionEnum($docType->getSingleName());
             } catch (\ReflectionException $exception) {
                 $errors[] = new ValidatorException(
                     $table,

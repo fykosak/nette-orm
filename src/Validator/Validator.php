@@ -30,11 +30,7 @@ class Validator
         $metaData = $service->getColumnMetadata();
         $exceptions = [];
         foreach ($metaData as $metaDatum) {
-            try {
-                $this->validateColumn($metaDatum, $doc[$metaDatum['name']] ?? null);
-            } catch (ValidatorException $exception) {
-                $exceptions[] = $exception;
-            }
+            $exceptions += $this->validateColumn($metaDatum, $doc[$metaDatum['name']] ?? null);
         }
         return $exceptions;
     }
@@ -42,13 +38,15 @@ class Validator
     /**
      * @phpstan-param ColumnMeta $metadata
      * @phpstan-param ColumnDoc|null $doc
+     * @return ValidatorException[]
      * @throws \Exception
      */
-    private function validateColumn(array $metadata, array|null $doc): void
+    private function validateColumn(array $metadata, array|null $doc): array
     {
+        $errors = [];
         $name = $metadata['name'];
         if (!isset($doc)) {
-            throw new ValidatorException(
+            $errors[] = new ValidatorException(
                 $metadata['table'],
                 $metadata['name'],
                 \sprintf(
@@ -56,13 +54,15 @@ class Validator
                     $name,
                 )
             );
+            return $errors;
         }
         $dbType = $this->matchType($metadata);
-        $errors = [];
+
         new CheckNull()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
         new CheckBuildIn()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
         new CheckClass()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
         new CheckEnum()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
+        return $errors;
     }
 
     /**

@@ -17,7 +17,7 @@ class CheckClass implements ValidatorCheck
         string $column,
         array &$errors
     ): void {
-        if (!$dbType->isBuiltin()) {
+        if (!$dbType->isBuiltin() && !$docType->isBuiltin()) {
             if (
                 $docType->getSingleName() !== $dbType->getSingleName() &&
                 /** @phpstan-ignore argument.type,argument.type */

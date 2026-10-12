@@ -22,9 +22,9 @@ class CheckNull implements ValidatorCheck
                 $table,
                 $column,
                 sprintf(
-                    'Database %s allows NULL but PHPDoc %s allow NULL',
-                    $dbType->allows('null') ? 'does' : 'doesnt',
-                    $docType->allows('null') ? 'does' : 'doesnt',
+                    'Database %s NULL but PHPDoc %s NULL',
+                    $dbType->allows('null') ? 'allows' : 'doesnt allow',
+                    $docType->allows('null') ? 'allows' : 'doesnt allow',
                 )
             );
         }

@@ -17,7 +17,7 @@ class CheckBuildIn implements ValidatorCheck
         string $column,
         array &$errors
     ): void {
-        if ($dbType->isBuiltin()) {
+        if ($dbType->isBuiltin() || $docType->isBuiltin()) {
             if ($dbType->getSingleName() !== $docType->getSingleName()) {
                 $errors[] = new ValidatorException(
                     $table,
