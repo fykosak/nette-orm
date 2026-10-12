@@ -30,7 +30,10 @@ class Validator
         $metaData = $service->getColumnMetadata();
         $exceptions = [];
         foreach ($metaData as $metaDatum) {
-            $exceptions += $this->validateColumn($metaDatum, $doc[$metaDatum['name']] ?? null);
+            $exceptions = [
+                ...$exceptions,
+                ...$this->validateColumn($metaDatum, $doc[$metaDatum['name']] ?? null)
+            ];
         }
         return $exceptions;
     }
