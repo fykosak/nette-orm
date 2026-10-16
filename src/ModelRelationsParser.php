@@ -12,17 +12,18 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
 
+/**
+ * @phpstan-type ColumnDoc array{
+ *      type:Type,
+ *      property:string
+ *  }
+ */
 class ModelRelationsParser
 {
     /**
      * @template TModel of Model
      * @phpstan-param ReflectionClass<TModel> $modelReflection
-     * @phpstan-return array<string,array{
-     *     type:Type,
-     *     reflection:ReflectionClass<object>|null,
-     *     property:string
-     * }>|null
-     * @throws ReflectionException
+     * @phpstan-return array<string,ColumnDoc>|null
      */
     public static function parseModelDoc(ReflectionClass $modelReflection): ?array
     {
@@ -40,19 +41,21 @@ class ModelRelationsParser
             if ($m !== false && $m !== 0) {
                 [, $returnString, $property] = $matches;
                 $returnType = Type::fromString($returnString);
+                if (!$returnType->isBuiltin() && $returnType->isSimple()) {
+                    if ($returnType->allows('null')) {
+                        $returnType = Type::fromString(
+                        /** @phpstan-ignore argument.type,argument.type */
+                            '?' . Reflection::expandClassName($returnType->getSingleName(), $modelReflection)
+                        );
+                    } else {
+                        $returnType = Type::fromString(
+                        /** @phpstan-ignore argument.type,argument.type */
+                            Reflection::expandClassName($returnType->getSingleName(), $modelReflection)
+                        );
+                    }
+                }
                 $properties[$property] = [
                     'type' => $returnType,
-                    'reflection' => $returnType->isClass()
-                        ? new ReflectionClass(
-                        /** @phpstan-ignore argument.type */
-                            Reflection::expandClassName(
-                            /** @phpstan-ignore argument.type */
-                                $returnType->getSingleName(),
-                                /** @phpstan-ignore argument.type */
-                                $modelReflection
-                            )
-                        )
-                        : null,
                     'property' => $property,
                 ];
             }
@@ -143,10 +146,8 @@ class ModelRelationsParser
                 if (!$type->isClass()) {
                     continue;
                 }
-                $itemReflection = new ReflectionClass(
-                /** @phpstan-ignore argument.type,argument.type,argument.type */
-                    Reflection::expandClassName($type->getSingleName(), $model)
-                );
+                /** @phpstan-ignore argument.type */
+                $itemReflection = new ReflectionClass($type->getSingleName());
                 if ($itemReflection->isSubclassOf(Model::class)) {
                     $items[$itemReflection->name] = [
                         'type' => 'property',
@@ -183,7 +184,6 @@ class ModelRelationsParser
             self::resolveReferencedProperties($model),
             self::resolveReferencedMethods($model)
         );
-
         if (isset($items[$requestedModel->getName()])) {
             return [$items[$requestedModel->getName()]];
         }

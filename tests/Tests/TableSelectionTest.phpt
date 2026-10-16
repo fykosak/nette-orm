@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM\Tests\Tests;
 
-use Fykosak\NetteORM\Tests\ORM\EventModel;
-use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
-use Fykosak\NetteORM\Tests\ORM\EventService;
-use Fykosak\NetteORM\Tests\ORM\ParticipantService;
 use Fykosak\NetteORM\Selection\TypedSelection;
+use Fykosak\NetteORM\Tests\ORM\EventModel;
+use Fykosak\NetteORM\Tests\ORM\EventService;
+use Fykosak\NetteORM\Tests\ORM\ParticipantModel;
+use Fykosak\NetteORM\Tests\ORM\ParticipantService;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
 use Tester\Assert;
@@ -17,12 +17,22 @@ require_once __DIR__ . '/TestCase.php';
 
 class TableSelectionTest extends TestCase
 {
+    private EventService $eventService;
+    private ParticipantService $participantService;
+
+    public function injectEventService(EventService $eventService): void
+    {
+        $this->eventService = $eventService;
+    }
+
+    public function injectParticipantService(ParticipantService $participantService): void
+    {
+        $this->participantService = $participantService;
+    }
 
     public function testType(): void
     {
-        /** @var EventService $serviceEvent */
-        $serviceEvent = $this->container->getByType(EventService::class);
-        $selection = $serviceEvent->getTable();
+        $selection = $this->eventService->getTable();
         Assert::type(TypedSelection::class, $selection);
         Assert::type(Selection::class, $selection);
         $event = $selection->fetch();
@@ -32,9 +42,7 @@ class TableSelectionTest extends TestCase
 
     public function testReferenced(): void
     {
-        /** @var ParticipantService $serviceEvent */
-        $serviceEvent = $this->container->getByType(ParticipantService::class);
-        $participant = $serviceEvent->getTable()->fetch();
+        $participant = $this->participantService->getTable()->fetch();
 
         Assert::type(ParticipantModel::class, $participant);
         $event = $participant->event;
@@ -43,9 +51,7 @@ class TableSelectionTest extends TestCase
 
     public function testRelated(): void
     {
-        /** @var ParticipantService $serviceEvent */
-        $serviceEvent = $this->container->getByType(EventService::class);
-        $event = $serviceEvent->getTable()->fetch();
+        $event = $this->eventService->getTable()->fetch();
         $participant = $event->related('participant')->fetch();
         Assert::type(ParticipantModel::class, $participant);
     }
