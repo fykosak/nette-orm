@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM\Validator;
 
-use Fykosak\NetteORM\ValidatorException;
 use Nette\Utils\Type;
 
 class CheckEnum implements ValidatorCheck
@@ -22,7 +21,7 @@ class CheckEnum implements ValidatorCheck
                 /** @phpstan-ignore argument.type */
                 $docReflection = new \ReflectionEnum($docType->getSingleName());
             } catch (\ReflectionException $exception) {
-                $errors[] = new ValidatorException(
+                $errors[] = new ValidatorError(
                     $table,
                     $column,
                     $exception->getMessage()
@@ -40,7 +39,7 @@ class CheckEnum implements ValidatorCheck
                     $case = $enumClassName::from($trimmedCase);
                     $enumCases = array_filter($enumCases, fn($c) => $c === $case);
                 } catch (\ValueError $e) {
-                    $errors[] = new ValidatorException(
+                    $errors[] = new ValidatorError(
                         $metadata['table'],
                         $metadata['name'],
                         $e->getMessage(),
@@ -48,7 +47,7 @@ class CheckEnum implements ValidatorCheck
                 }
             }
             foreach ($enumCases as $missing) {
-                $errors[] = new ValidatorException(
+                $errors[] = new ValidatorError(
                     $metadata['table'],
                     $metadata['name'],
                     sprintf(

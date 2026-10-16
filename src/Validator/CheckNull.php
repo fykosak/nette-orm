@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM\Validator;
 
-use Fykosak\NetteORM\ValidatorException;
 use Nette\Utils\Type;
 
 class CheckNull implements ValidatorCheck
@@ -18,7 +17,7 @@ class CheckNull implements ValidatorCheck
         array &$errors
     ): void {
         if ($dbType->allows('null') xor $docType->allows('null')) {
-            $errors[] = new ValidatorException(
+            $errors[] = new ValidatorError(
                 $table,
                 $column,
                 sprintf(

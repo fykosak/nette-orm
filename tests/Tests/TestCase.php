@@ -36,6 +36,7 @@ abstract class TestCase extends \Tester\TestCase
         });
 
         $this->container = new $class();
+        $this->container->callInjects($this);
     }
 
     protected function setUp(): void

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM\Validator;
 
-use Fykosak\NetteORM\ValidatorException;
 use Nette\Utils\Type;
 
 class CheckBuildIn implements ValidatorCheck
@@ -19,7 +18,7 @@ class CheckBuildIn implements ValidatorCheck
     ): void {
         if ($dbType->isBuiltin() || $docType->isBuiltin()) {
             if ($dbType->getSingleName() !== $docType->getSingleName()) {
-                $errors[] = new ValidatorException(
+                $errors[] = new ValidatorError(
                     $table,
                     $column,
                     sprintf(

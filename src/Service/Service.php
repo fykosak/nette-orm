@@ -8,6 +8,8 @@ use Fykosak\NetteORM\Mapper;
 use Fykosak\NetteORM\Model\Model;
 use Fykosak\NetteORM\Selection\TypedSelection;
 use Fykosak\NetteORM\Types\WGS84Point;
+use Fykosak\NetteORM\Validator\Validator;
+use Fykosak\NetteORM\Validator\ValidatorException;
 use Nette\Database\Explorer;
 use Nette\InvalidStateException;
 
@@ -33,12 +35,20 @@ abstract class Service
 
     /**
      * @param Mapper<string,TModel> $mapper
+     * @throws \ReflectionException
      */
     final public function __construct(
         private readonly string $tableName,
         public readonly Explorer $explorer,
         private readonly Mapper $mapper
     ) {
+        if ($this->mapper->validate) {
+            $validator = new Validator();
+            $errors = $validator($this);
+            if (count($errors) > 0) {
+                throw new ValidatorException($errors);
+            }
+        }
     }
 
     /**

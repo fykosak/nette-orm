@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Fykosak\NetteORM\Validator;
 
-use Fykosak\NetteORM\ValidatorException;
 use Nette\Utils\Type;
 
 class CheckClass implements ValidatorCheck
@@ -23,7 +22,7 @@ class CheckClass implements ValidatorCheck
                 /** @phpstan-ignore argument.type,argument.type */
                 !new \ReflectionClass($docType->getSingleName())->isSubclassOf($dbType->getSingleName())
             ) {
-                $errors[] = new ValidatorException(
+                $errors[] = new ValidatorError(
                     $table,
                     $column,
                     sprintf(

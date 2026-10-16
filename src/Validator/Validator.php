@@ -8,7 +8,6 @@ use Fykosak\NetteORM\Model\Model;
 use Fykosak\NetteORM\ModelRelationsParser;
 use Fykosak\NetteORM\Service\Service;
 use Fykosak\NetteORM\Types\WGS84Point;
-use Fykosak\NetteORM\ValidatorException;
 use Nette\Utils\Type;
 
 /**
@@ -20,7 +19,7 @@ class Validator
     /**
      * @template M of Model
      * @param Service<M> $service
-     * @return ValidatorException[]
+     * @return ValidatorError[]
      * @throws \ReflectionException
      * @throws \Exception
      */
@@ -41,7 +40,7 @@ class Validator
     /**
      * @phpstan-param ColumnMeta $metadata
      * @phpstan-param ColumnDoc|null $doc
-     * @return ValidatorException[]
+     * @return ValidatorError[]
      * @throws \Exception
      */
     private function validateColumn(array $metadata, array|null $doc): array
@@ -49,7 +48,7 @@ class Validator
         $errors = [];
         $name = $metadata['name'];
         if (!isset($doc)) {
-            $errors[] = new ValidatorException(
+            $errors[] = new ValidatorError(
                 $metadata['table'],
                 $metadata['name'],
                 \sprintf(
@@ -59,19 +58,21 @@ class Validator
             );
             return $errors;
         }
-        $dbType = $this->matchType($metadata);
-
-        new CheckNull()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
-        new CheckBuildIn()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
-        new CheckClass()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
-        new CheckEnum()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
+        $dbType = $this->matchType($metadata, $errors);
+        if (isset($dbType)) {
+            new CheckNull()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
+            new CheckBuildIn()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
+            new CheckClass()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
+            new CheckEnum()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
+        }
         return $errors;
     }
 
     /**
      * @phpstan-param ColumnMeta $metadata
+     * @phpstan-param ValidatorError[] $errors
      */
-    private function matchType(array $metadata): Type
+    private function matchType(array $metadata, array &$errors): ?Type
     {
         if ($metadata['nativetype'] === 'BOOL') {
             return $metadata['nullable'] ? Type::fromString('?bool') : Type::fromString('bool');
@@ -129,7 +130,7 @@ class Validator
             return $metadata['nullable'] ? Type::fromString('?int') : Type::fromString('int');
         }
 
-        throw new ValidatorException(
+        $errors[] = new ValidatorError(
             $metadata['table'],
             $metadata['name'],
             sprintf(
@@ -137,5 +138,6 @@ class Validator
                 $metadata['nativetype'],
             )
         );
+        return null;
     }
 }

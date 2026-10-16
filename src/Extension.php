@@ -11,6 +11,8 @@ use Fykosak\NetteORM\Service\Service;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\NotImplementedException;
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
 
 class Extension extends CompilerExtension
 {
@@ -20,12 +22,27 @@ class Extension extends CompilerExtension
     public function loadConfiguration(): void
     {
         $mapper = $this->getContainerBuilder()->addDefinition($this->prefix('mapper'));
-        $mapper->setFactory(Mapper::class);
+        $mapper->setFactory(Mapper::class, [$this->config['validation']]);
+
         /** @phpstan-ignore foreach.nonIterable */
-        foreach ($this->config as $tableName => $fieldDefinitions) {
+        foreach ($this->config['tables'] as $tableName => $fieldDefinitions) {
             /** @phpstan-ignore argument.type */
             $this->registerORMService($tableName, $fieldDefinitions, $mapper);
         }
+    }
+
+    public function getConfigSchema(): Schema
+    {
+        return Expect::structure([
+            'validation' => Expect::bool(false),
+            'tables' => Expect::arrayOf(
+                Expect::structure([
+                    'model' => Expect::string(),
+                    'service' => Expect::string(),
+                ])->castTo('array'),
+                'string'
+            )->castTo('array')
+        ])->otherItems('mixed')->castTo('array');
     }
 
     /**

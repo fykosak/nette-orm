@@ -3,7 +3,6 @@
 namespace Fykosak\NetteORM\Validator;
 
 use Fykosak\NetteORM\Service\Service;
-use Fykosak\NetteORM\ValidatorException;
 use Nette\Utils\Type;
 
 /**
@@ -13,7 +12,7 @@ interface ValidatorCheck
 {
     /**
      * @phpstan-param ColumnMeta $metadata
-     * @phpstan-param ValidatorException[] $errors
+     * @phpstan-param ValidatorError[] $errors
      */
     public function validate(
         Type $dbType,
