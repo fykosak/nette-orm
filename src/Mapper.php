@@ -22,6 +22,11 @@ class Mapper
      */
     private array $map = [];
 
+    public function __construct(
+        public readonly bool $validate = false
+    ) {
+    }
+
     /**
      * @throws Throwable
      * @phpstan-param TKey $table

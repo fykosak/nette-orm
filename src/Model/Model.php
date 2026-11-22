@@ -53,17 +53,16 @@ abstract class Model extends ActiveRow
         if (!is_null($value) && isset($docs[$key])) {
             $item = $docs[$key];
             if ($item['type']->isClass()) {
-                $returnType = $item['reflection'];
-                if (isset($returnType)) {
-                    if ($value instanceof ActiveRow) {
-                        if ($returnType->isSubclassOf(self::class)) {
-                            $value = $returnType->newInstance($value->toArray(), $value->getTable());
-                        }
-                    } elseif ($returnType->isSubclassOf(\BackedEnum::class)) {
-                        $value = $returnType->getMethod('tryFrom')->invoke($returnType, $value);
-                    } elseif ($returnType->name === WGS84Point::class) {
-                        $value = $returnType->getMethod('fromBytes')->invoke($returnType, $value);
+                /** @phpstan-ignore argument.type */
+                $returnType = new \ReflectionClass($item['type']->getSingleName());
+                if ($value instanceof ActiveRow) {
+                    if ($returnType->isSubclassOf(self::class)) {
+                        $value = $returnType->newInstance($value->toArray(), $value->getTable());
                     }
+                } elseif ($returnType->isSubclassOf(\BackedEnum::class)) {
+                    $value = $returnType->getMethod('tryFrom')->invoke($returnType, $value);
+                } elseif ($returnType->name === WGS84Point::class) {
+                    $value = $returnType->getMethod('fromBytes')->invoke($returnType, $value);
                 }
             }
         }
@@ -92,9 +91,9 @@ abstract class Model extends ActiveRow
         if ($path !== null) {
             foreach ($path as $item) {
                 $nextModel = $item['type'] === 'property'
-                    /** @phpstan-ignore property.dynamicName  */
+                    /** @phpstan-ignore property.dynamicName */
                     ? $newModel->{$item['accessor']}
-                    /** @phpstan-ignore method.dynamicName  */
+                    /** @phpstan-ignore method.dynamicName */
                     : $newModel->{$item['accessor']}();
                 if (is_null($nextModel)) {
                     if ($item['nullable']) {

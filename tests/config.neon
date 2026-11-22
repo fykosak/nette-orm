@@ -1,12 +1,14 @@
 services:
     - Nette\Caching\Storages\FileStorage(/tmp)
 orm:
-    event:
-        model: Fykosak\NetteORM\Tests\ORM\EventModel
-        service: Fykosak\NetteORM\Tests\ORM\EventService
-    participant:
-        model: Fykosak\NetteORM\Tests\ORM\ParticipantModel
-        service: Fykosak\NetteORM\Tests\ORM\ParticipantService
+    validation: true
+    tables:
+        event:
+            model: Fykosak\NetteORM\Tests\ORM\EventModel
+            service: Fykosak\NetteORM\Tests\ORM\EventService
+        participant:
+            model: Fykosak\NetteORM\Tests\ORM\ParticipantModel
+            service: Fykosak\NetteORM\Tests\ORM\ParticipantService
 
 includes:
     - config.local.neon

@@ -15,32 +15,39 @@ require_once __DIR__ . '/TestCase.php';
 
 class ReferencedAccessTest extends TestCase
 {
+    private EventService $eventService;
+    private ParticipantService $participantService;
+
+    public function injectEventService(EventService $eventService): void
+    {
+        $this->eventService = $eventService;
+    }
+
+    public function injectParticipantService(ParticipantService $participantService): void
+    {
+        $this->participantService = $participantService;
+    }
+
     public function testSuccess(): void
     {
-        /** @var ParticipantService $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         /** @var ParticipantModel $participant */
-        $participant = $serviceParticipant->getTable()->fetch();
+        $participant = $this->participantService->getTable()->fetch();
         $modelEvent = $participant->getReferencedModel(EventModel::class);
         Assert::type(EventModel::class, $modelEvent);
     }
 
     public function testSame(): void
     {
-        /** @var ParticipantService $serviceParticipant */
-        $serviceParticipant = $this->container->getByType(ParticipantService::class);
         /** @var ParticipantModel $participant */
-        $participant = $serviceParticipant->getTable()->fetch();
+        $participant = $this->participantService->getTable()->fetch();
         $newModel = $participant->getReferencedModel(ParticipantModel::class);
         Assert::same($participant, $newModel);
     }
 
     public function testNoCandidate(): void
     {
-        /** @var EventService $service */
-        $service = $this->container->getByType(EventService::class);
         /** @var EventModel $event */
-        $event = $service->getTable()->fetch();
+        $event = $this->eventService->getTable()->fetch();
         Assert::exception(function () use ($event) {
             $event->getReferencedModel(ParticipantModel::class);
         }, CannotAccessModelException::class);

@@ -8,25 +8,47 @@ use Fykosak\NetteORM\Mapper;
 use Fykosak\NetteORM\Model\Model;
 use Fykosak\NetteORM\Selection\TypedSelection;
 use Fykosak\NetteORM\Types\WGS84Point;
+use Fykosak\NetteORM\Validator\Validator;
+use Fykosak\NetteORM\Validator\ValidatorException;
 use Nette\Database\Explorer;
 use Nette\InvalidStateException;
 
 /**
  * @template TModel of Model
+ * @phpstan-type ColumnMeta array{
+ *      name: string,
+ *      table: string,
+ *      nativetype: string,
+ *      size: ?int,
+ *      nullable: bool,
+ *      default: mixed,
+ *      autoincrement: bool,
+ *      primary: bool,
+ *      comment: ?string,
+ *      vendor: array<string, mixed>
+ *  }
  */
 abstract class Service
 {
-    /** @phpstan-var array<int,array<string,mixed>> */
+    /** @phpstan-var list<ColumnMeta> */
     private array $columns;
 
     /**
      * @param Mapper<string,TModel> $mapper
+     * @throws \ReflectionException
      */
     final public function __construct(
         private readonly string $tableName,
         public readonly Explorer $explorer,
         private readonly Mapper $mapper
     ) {
+        if ($this->mapper->validate) {
+            $validator = new Validator();
+            $errors = $validator($this);
+            if (count($errors) > 0) {
+                throw new ValidatorException($errors);
+            }
+        }
     }
 
     /**
@@ -124,9 +146,9 @@ abstract class Service
     }
 
     /**
-     * @phpstan-return array<int,array<string,mixed>>
+     * @return list<ColumnMeta>
      */
-    protected function getColumnMetadata(): array
+    public function getColumnMetadata(): array
     {
         if (!isset($this->columns)) {
             $this->columns = $this->explorer->getConnection()->getDriver()->getColumns($this->tableName);
