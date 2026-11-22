@@ -60,10 +60,22 @@ class Validator
         }
         $dbType = $this->matchType($metadata, $errors);
         if (isset($dbType)) {
-            new CheckNull()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
-            new CheckBuildIn()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
-            new CheckClass()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
-            new CheckEnum()->validate($dbType, $doc['type'], $metadata, $metadata['table'], $metadata['name'], $errors);
+            $tests = [
+                new CheckNull(),
+                new CheckBuildIn(),
+                new CheckClass(),
+                new CheckEnum()
+            ];
+            foreach ($tests as $test) {
+                $test->validate(
+                    $dbType,
+                    $doc['type'],
+                    $metadata,
+                    $metadata['table'],
+                    $metadata['name'],
+                    $errors
+                );
+            }
         }
         return $errors;
     }
