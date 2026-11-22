@@ -52,7 +52,7 @@ abstract class Service
     }
 
     /**
-     * @phpstan-return Model|null
+     * @phpstan-return TModel|null
      */
     public function findByPrimary(string|int|null $key): ?Model
     {
@@ -60,7 +60,7 @@ abstract class Service
     }
 
     /**
-     * @phpstan-param Model $model
+     * @phpstan-param TModel $model
      * @throws \PDOException
      */
     public function disposeModel(Model $model): void
@@ -85,9 +85,9 @@ abstract class Service
     }
 
     /**
-     * @phpstan-param Model|null $model
+     * @phpstan-param TModel|null $model
      * @phpstan-param array<string,mixed> $data
-     * @phpstan-return Model
+     * @phpstan-return TModel
      * @throws \PDOException
      */
     public function storeModel(array $data, ?Model $model = null): Model
@@ -111,7 +111,7 @@ abstract class Service
 
     /**
      * @throws \InvalidArgumentException
-     * @phpstan-param Model $model
+     * @phpstan-param TModel $model
      */
     protected function checkType(Model $model): void
     {

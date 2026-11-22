@@ -22,11 +22,11 @@ class Extension extends CompilerExtension
     public function loadConfiguration(): void
     {
         $mapper = $this->getContainerBuilder()->addDefinition($this->prefix('mapper'));
+        /** @phpstan-ignore offsetAccess.nonOffsetAccessible */
         $mapper->setFactory(Mapper::class, [$this->config['validation']]);
 
-        /** @phpstan-ignore foreach.nonIterable */
+        /** @phpstan-ignore offsetAccess.nonOffsetAccessible */
         foreach ($this->config['tables'] as $tableName => $fieldDefinitions) {
-            /** @phpstan-ignore argument.type */
             $this->registerORMService($tableName, $fieldDefinitions, $mapper);
         }
     }

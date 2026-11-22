@@ -23,7 +23,7 @@ class Mapper
     private array $map = [];
 
     public function __construct(
-        public readonly bool $validate
+        public readonly bool $validate = false
     ) {
     }
 

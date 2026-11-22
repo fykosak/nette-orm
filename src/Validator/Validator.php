@@ -17,8 +17,8 @@ use Nette\Utils\Type;
 class Validator
 {
     /**
-     * @template M of Model
-     * @param Service<M> $service
+     * @template TModel of Model
+     * @param Service<TModel> $service
      * @return ValidatorError[]
      * @throws \ReflectionException
      * @throws \Exception
