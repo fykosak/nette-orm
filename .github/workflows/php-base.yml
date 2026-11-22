@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         php: [ '8.5' ]
-        script: ['testPSR12', 'testPHPStan']
+        script: ['testPSR', 'testPHPStan']
     steps:
       - uses: actions/checkout@v2
         name: Checkout
